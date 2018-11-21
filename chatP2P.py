@@ -111,13 +111,15 @@ while True:
                 sys.exit(0);
             except:
                 pass
-            try:
-                server = Server()
-            except KeyboardInterrupt:
-                sys.exit(0);
-            except:
-                print("Couldn't start the server ...")
-                pass
+            if randint(1,20) == 1:
+                #   one in every 20 clients will try to become the server
+                try:
+                    server = Server()
+                except KeyboardInterrupt:
+                    sys.exit(0);
+                except:
+                    print("Couldn't start the server ...")
+                    pass
             
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
