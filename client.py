@@ -17,6 +17,8 @@ class Client:
 
     actualRoom = []
 
+    
+
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     def sendMsg(self):

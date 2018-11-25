@@ -18,7 +18,8 @@ class Server:
     userVector = [] 
         #   format: user,pass,roomName,rPassW, data(either command or message)
 
-    userMenuCommand = "@"
+    userMenuCommand = {64:"@"}
+
     
     
     def createUsr(self):
@@ -79,19 +80,25 @@ class Server:
                 (close, data) = self.recvMsg(c, a)
                 comData = data[0]
         
-                condMenu = (comData == self.userMenuCommand)
-        
+                condMenu = (comData == ord(self.userMenuCommand.get(64)))
+                #print(self.userMenuCommand.get(64))
+                
+                #print(type(comData))
+                #print(self.userMenuCommand.get(comData))
+                #print(condMenu)
+
+                
                 if (condMenu):
                     print("COND MENU")
                     while True:
                         self.sendMessage("Please choose a Number from 0 to 10: ")
                         (close, data) = self.recvMsg(c, a)
                         comData = int(data[0]) 
-                        condDataNum = (comData >= 0) and (comData < 10)
+                        condDataNum = (comData >= ord("0")) and (comData <= ord("8"))
                         if condDataNum:
                             break
                         else:
-                            self.sendMessage("Type a number between 0  and 10 ...\n")
+                            self.sendMessage("Type a number between 0  and 8 ...\n")
                     return (close, data)
                 else:#user just wants to talk
                     #data = "lalalallalalalalaladasdsadsa_RoomName"
@@ -135,9 +142,9 @@ class Server:
     def userFlow(self, c, a):#inside handler
         close = False
         command = "10"
+
         (close, command) = self.usrListener(c, a)
         
-        command = "10"
         if not(command == "6") and not (command == "10"):
             self.clearScreen()
         if command == "0":
@@ -163,8 +170,6 @@ class Server:
         else:
             pass
     
-
-        
         return close
 
 
