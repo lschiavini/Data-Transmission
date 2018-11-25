@@ -28,6 +28,7 @@ class User:
     
     def setConnection(self, c):
         self.actualConnection = c
+        
     def setRoom(self, room):
         self.actualRoom = room
     

@@ -3,7 +3,7 @@ from server import *
 class Room:
     name = ""
     passW = "None"
-    isVip = False
+    isVipVar = False
     numberUser = 0
     
     users = []#Object Users
@@ -11,44 +11,39 @@ class Room:
     # if no passWord, not VIP check
 
     def __init__(self, namey = None, passey = None):
-        yesNo = ""
-        condNo = (yesNo != "N") or (yesNo != "n") 
-        condYes = (yesNo != "Y") or (yesNo != "y")
-        
-        #easy debug code for name pass room
         condNameNone = namey == None
         condPassNone = passey == None
-        self.name = namey
-        self.passW = "None"
         if not (condNameNone and condPassNone):
-            pass
-        #finish easy debug for name pass room
+            self.name = namey
+            self.passW = "None"
         else:
-            self.name = input("Set up the name of the Room: ") 
-            while (condYes or condNo):
-                yesNo = input("Do you want a password? (Y/n)")
-                if condYes:
-                    self.isVip = True
-                    self.passW = input("Set up the password of the Room: ")
-                    break
-                else:
-                    self.passW = "None"
-                    break
+            pass
+    
+
+    def setName(self, name):
+        self.name = name
+    
+    def setPass(self, passW):
+        self.passW = passW
+
     def getName(self):
         return self.name
     
-    def getPassW(self):
+    def getPass(self):
         return self.passW
     
-    def isVip(self):
-        return self.isVip
+    def getIsVip(self):
+        return self.isVipVar
+
+    def isVip(self, vipStatus):
+        self.isVipVar = vipStatus
     
     def getNumberUsers(self):
         return self.numberUser
 
-    def addUser(self, usrName, c):
+    def addUser(self, c, user ):
         self.numberUser = self.numberUser + 1
-        self.users.extend[user]
+        self.users.append(user)
     
     def getUsers(self):
         return self.users

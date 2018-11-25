@@ -4,10 +4,11 @@ import sys
 from sys import argv, stdout, exit
 import random                                                      
 import os
+from threading import Event
+
 
 from room import *
 from usefulFunc import *
-
 from user import *
 
 class Server:
@@ -17,7 +18,7 @@ class Server:
         #   make server available to any IP address that is 
         #   configured on the server 
     connections = []
-    rooms = []
+    roomVector = []
         #   format: object room
     userVector = [] 
         #   format: object user
@@ -29,39 +30,38 @@ class Server:
         self.clearScreen(c,a)
         self.sendToUser(c, " Welcome to the ChatRoom App...\nPress @ to see the Menu\n\n\n")
     
-    def createUsr(self, c, a):
-            
-        yesNo = ""
-        condNo = (yesNo == "N") or (yesNo == "n") 
-        condYes = (yesNo == "Y") or (yesNo == "y")
-
-        newUser = User()
+    def createUsr(self, c, a, newUser):
 
         while True:
             self.sendToUser(c," Please write your new Username: ")
             (close, data) = self.receiveStrMessage(c, a)
             
-            print(data)
-            if (self.testUsrPass(data, None)):
+            (condTestPass, userObj) = self.testUsrPass(data, None)
+
+            if (condTestPass):
                 #if User doesnt exists returns True
                 newUser.setName(data)#sets Name
                 while True:
                     self.sendToUser(c," Please choose a new Password: ")
                     (close, data) = self.receiveStrMessage(c, a)
                     prevPass = data
-                    self.sendToUser(c," Please write AGAIN your Password: ")
+                    self.sendToUser(c," Please REPEAT your Password: ")
                     (close, data) = self.receiveStrMessage(c, a)
                     nextPass = data
                     
-                    print("DEBUG LAZYYYY")
-                    print(newUser.getName())
-                    if not (self.testUsrPass(newUser.getName(), None)):
-                        self.sendToUser(c," Somebody created the User before you did...\n")
-                        break
-                    elif(prevPass == nextPass):
+                    (condTestPass, userObj) = self.testUsrPass(data, None)
+           
+                    #if not (condTestPass):
+                    #    self.sendToUser(c," Somebody created the User before you did...\n")
+                    #    break
+                    #el
+                    if(prevPass == nextPass):
                         newUser.setPass(data)#PassWord
                         self.userVector.append(newUser)
-                        self.sendToUser(c," New User Added\n\n\n\n\n")
+                        self.clearScreen(c,a)
+                        self.sendToUser(c," New User Added...Going to Login\n\n\n\n\n")
+                        userObj = self.confirmLogin(c,a, newUser)
+
                         return close
                     else:
                         pass
@@ -70,20 +70,49 @@ class Server:
                 self.sendToUser(c," User already exists... Do you want to go to Login? (Y/n)\n")
                 (close, data) = self.receiveStrMessage(c, a)
                 yesNo = data
+                condNo = (yesNo == "N") or (yesNo == "n") 
+                condYes = (yesNo == "Y") or (yesNo == "y")
                 if (condYes):
                     #go to Login
-                    self.confirmLogin(c)
+                    userObj = self.confirmLogin(c,a, newUser)
                     return close
                 elif(condNo):
                     #ask for another userName input
                     pass
 
-
-
-    def confirmLogin(self):
+    def confirmLogin(self,c,a, iUser):
         #User exists? if yes testUsrPass, else createUsr
-        pass
-    
+        #   Assigns connection to User
+        yesNo = ""
+
+
+        while True:
+            self.sendToUser(c," LOGIN\n Please write your Username: ")
+            (close, userName) = self.receiveStrMessage(c, a)
+            self.sendToUser(c," Please write your Password: ")
+            (close, passW) = self.receiveStrMessage(c, a)
+
+            (condTestPass, userObj) = self.testUsrPass(userName, passW)
+            print(str(condTestPass) + " User found: " + userObj.getName() + "Pass: " + userObj.getPass())
+            if(condTestPass):
+                for u in self.userVector:
+                    if (u.getName() == userObj.getName()):
+                        u.setConnection(c)
+                        self.sendToUser(c," Logged In, You Welcome ")  
+                        Event().wait(1.5)           
+                        return (True, u)
+            else:
+                self.sendToUser(c," LOGIN\n Wrong Password. Do you Want to Try again?(Y/n) ")
+                (close, data) = self.receiveStrMessage(c, a)
+                yesNo = data
+                condNo = (yesNo == "N") or (yesNo == "n") 
+                condYes = (yesNo == "Y") or (yesNo == "y")
+                if (condYes):
+                    #go to Login
+                    pass
+                elif(condNo):
+                    #ask for another userName input
+                    self.createUsr(c,a, iUser)
 
     def printAllUsr(self):
         print("User List ------- Pass List\n")
@@ -93,6 +122,7 @@ class Server:
     def testUsrPass(self, userName, passW = None):
         #Tests User/password
         #If it passes the test returns True, else False
+        newUser = User()
         if (len(self.userVector) > 0):
             print("There are Users")
             if (passW == None):
@@ -100,28 +130,26 @@ class Server:
                 for usr in self.userVector:
                     print("User: " + userName + "\tVectUser: " + usr.getName())
                     if (usr.getName() == userName):
-                        return False
-                    else:
-                        return True
+                        return (False,newUser)
+                return (True,usr)
             else:
                 for usr in self.userVector:
                     if (usr.getName() == userName):
-                        if(usr.getPassW() == passW):
-                            return True
-                        else:
-                            return False #Pass doesnt match
-                    else:
-                        return False    #User doesnt match
+                        if(usr.getPass() == passW):
+                            return (True, usr)        
+                return (False,newUser)    #User doesnt match
         else:
             print(" There are no Users")
-            return True
+            return (True, newUser)
 
-    def devMenu(self, c, a):
-        #Create a user
-        self.printAllUsr()
-        close = self.createUsr(c, a)
+    def devMenu(self, c, a, iUser):
+
+        self.clearScreen(c,a)
+        self.printMenu(c,a)
         #Create a Room
-        #close = self.createRoom(c, a)
+        close = self.createRoom(c, a, iUser)
+        self.confirmEnter(c, a, iUser)
+
         #Add user to Room
         pass
 
@@ -129,11 +157,18 @@ class Server:
         global connections
         close = False
         data = ""
-        
+
         self.printWelcome(c, a)
+
+        
+        #Create a user
+        self.printAllUsr()
+        iUser = User()
+        close = self.createUsr(c, a, iUser)
+
         while True:
             #close = self.userFlow(c , a)            
-            self.devMenu(c , a)
+            self.devMenu(c , a, iUser)
             #(close, data) = self.usrListener(c, a)
             if (close):
                 break
@@ -146,20 +181,188 @@ class Server:
     def writeUsr2File(self, user, passW, roomName, rPassW):
         pass
     
-    def createRoom(self, roomName, rPassW):
-        rooms.append(Room(roomName, rPassW))
-    
-    def checkDuplicateRoom(self,  roomName, rPassW):
-        pass
+    def createRoom(self, c, a, user):
+        newRoom = Room()
 
-    
-    def enterRoom(self, roomName, rPassW):
-        pass
+        while True:
+            self.sendToUser(c," Please write the name of the Room: ")
+            (close, data) = self.receiveStrMessage(c, a)
+            
+            (condTestPass, roomObj) = self.testRoomPass(data, None)
+
+            if (condTestPass):
+                #if Room doesnt exists returns True
+                newRoom.setName(data)#sets Name
+                newRoom.setPass("None")#sets Name
+                newRoom.isVip(False)#sets Name
+                
+                self.sendToUser(c,"Do you want a password? (Y/n)")
+                (close, yesNo) = self.receiveStrMessage(c, a)
+                condNo = (yesNo == "N") or (yesNo == "n") 
+                condYes = (yesNo == "Y") or (yesNo == "y")
+
+                if(condYes):
+                    while True:
+                        self.sendToUser(c," Please choose a new Password: ")
+                        (close, data) = self.receiveStrMessage(c, a)
+                        prevPass = data
+                        self.sendToUser(c," Please REPEAT your Password: ")
+                        (close, data) = self.receiveStrMessage(c, a)
+                        nextPass = data
+                        
+                        (condTestPass, roomObj) = self.testRoomPass(data, None)
+            
+                        if not (condTestPass):
+                            self.sendToUser(c," Somebody created the Room before you did...\n")
+                            break
+                        elif(prevPass == nextPass):
+                            newRoom.setPass(data)#PassWord
+                            newRoom.isVip(True)
+                            self.roomVector.append(newRoom)
+                            self.clearScreen(c,a)
+                            self.sendToUser(c," New Room Added... Going back to Menu\n\n\n\n\n")
+                            Event().wait(1.5)
+                            return close
+                        else:
+                            pass
+                elif(condNo):
+                    newRoom.setPass("None")#PassWord
+                    newRoom.isVip(False)
+                    self.roomVector.append(newRoom)
+                    self.clearScreen(c,a)
+                    self.sendToUser(c," New Room Added... Going back to Menu\n\n\n\n\n")
+                    Event().wait(1.5)
+                    return close
+
+
+            else:
+                #Room already created, go to Login
+                self.sendToUser(c," Room already created... Do you want to Enter? (Y/n)\n")
+                (close, data) = self.receiveStrMessage(c, a)
+                yesNo = data
+                condNo = (yesNo == "N") or (yesNo == "n") 
+                condYes = (yesNo == "Y") or (yesNo == "y")
+                if (condYes):
+                    #go to Login
+                    self.confirmEnter(c,a, user)
+                    print("Entered Room that was already created")
+                    return close
+                elif(condNo):
+                    #ask for another roomName input
+                    pass
+
+    def testRoomPass(self, roomName, passW):
+        noneRoom = Room()
+        #Tests room/password
+        #If it passes the test returns True, else False
+        if (len(self.roomVector) > 0):
+            print("There are rooms")
+            if (passW == None):
+                #Tests if room isn't already being used
+                for rum in self.roomVector:
+                    print("room: " + roomName + "\tVectroom: " + rum.getName()+ "\tPASSoom: " + rum.getPass())
+                    if (rum.getName() == roomName):
+                        return (False,noneRoom)
+                return (True,rum)
+            else:
+                for rum in self.roomVector:
+                    print("\tPass Provided: " + passW + "\tRoom Pass: " + rum.getPass()+"\n")
+                    if (rum.getName() == roomName):
+                        if(rum.getPass() == passW):
+                            return (True, rum)
+                print("Pass doesnt match")
+                return (False, noneRoom) #Pass doesnt match
+                
+        else:
+            print(" There are no rooms")
+            return (True, noneRoom)
+
+    def findRoom(self, roomName):
+        findRoom = Room()
+        for rum in self.roomVector:
+            if (rum.getName() == roomName):
+                return (True, rum)
+        return(False, findRoom)
+                
+            
+
+        
+
+    def confirmEnter(self, c, a, user):
+        #Room exists? if yes testRoomPass, else createRoom
+        #   Assigns connection to User
+        yesNo = ""
+        condNo = (yesNo == "N") or (yesNo == "n") 
+        condYes = (yesNo == "Y") or (yesNo == "y")
+
+        self.showAllRooms(c,a)
+
+        while True:
+            self.sendToUser(c," Entering Room \n Please write the Room name: ")
+
+            (close, data) = self.receiveStrMessage(c, a)
+            roomName = data
+
+            (condExists, roomObj) = self.findRoom( roomName)
+            condHasPass = False
+            
+            if(condExists):
+                condHasPass = roomObj.getIsVip()
+            else:
+                pass
+            
+            
+            print(str(condHasPass) + "  "+roomObj.getName())
+            
+            self.findRoom(roomName)
+            if condHasPass: 
+                #The Room does have a password
+                self.sendToUser(c," Please write the Room Password: ")
+                (close, passW) = self.receiveStrMessage(c, a)
+
+                (condTestPass, roomObj) = self.testRoomPass(roomName, passW)
+                print(str(condTestPass) + " room found: " + roomObj.getName() + "Pass: " + roomObj.getPass())
+                if(condTestPass):
+                    for rum in self.roomVector:
+                        if (rum.getName() == roomObj.getName()):
+                            user.setRoom(rum)
+                            rum.addUser(c, user)
+                            self.sendToUser(c," Entered the Room, Have a nice chat :P ")  
+                            Event().wait(1.5)
+                            self.clearScreen(c,a)        
+                            return True
+                else:
+                    self.sendToUser(c," LOGIN\n Wrong Password. Do you Want to Try again?(Y/n) ")
+                    (close, data) = self.receiveStrMessage(c, a)
+                    yesNo = data
+                    if (condYes):
+                        #try again
+                        pass
+                    elif(condNo):
+                        #ask for another userName input
+                        break
+            else:
+                #The room is non Vip
+                for rum in self.roomVector:
+                    print(str(" room found: " + rum.getName() + "Pass: " + rum.getPass()))
+                    if (rum.getName() == roomObj.getName()):
+                        user.setRoom(rum)
+                        rum.addUser(c, user)
+                        self.sendToUser(c," Entered the Room, Have a nice chat :P ")  
+                        Event().wait(1.5)
+                        self.clearScreen(c,a)        
+                        return True
+                #didnt find room
+                print("No non vip room found")
+                return False
+
+
+
 
     def deleteRoom(self, roomName, rPassW):
         for n in range(len(rooms)):
             condName = rooms[n].getName() == roomName
-            condPassW = rooms[n].getPassW() == rPassW
+            condPassW = rooms[n].getPass() == rPassW
             
             if condName:
                 if condPassW:
@@ -169,14 +372,15 @@ class Server:
                     #ask password to client
                     pass
 
-    def showAllRooms(self):
+    def showAllRooms(self,c,a):
         message = " Rooms Available: \n"
-        self.sendToAll(message)
-        for n in range(len(rooms)):
-            message = rooms[n].getName()
-            if(rooms[n].getIsVip()):
+        self.sendToUser(c, message)
+        for n in range(len(self.roomVector)):
+            print("\tVectroom: " + self.roomVector[n].getName()+ "\tPASSoom: " + self.roomVector[n].getPass())
+            message = self.roomVector[n].getName()
+            if(self.roomVector[n].getIsVip()):
                 message = message + " LOCKED"  
-            self.sendToAll(message)
+            self.sendToUser(c," "+message + "\n\n")
             
 
     def usrListener(self, c, a):
@@ -221,7 +425,7 @@ class Server:
 
     
 
-    def printMenu(self):
+    def printMenu(self,c,a):
             printMenu = """//////WELCOME TO CHATROOM APP
                                         MENU \n  
                                 1 : CREATE ROOM \n
@@ -233,7 +437,7 @@ class Server:
                                 7 : EXIT :( 
                                 
                                 >> Press any number you want\n"""
-            self.sendToAll(printMenu)
+            self.sendToUser(c, printMenu)
 
     def clearScreen(self, c, a):
         clearScreen = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
@@ -256,7 +460,7 @@ class Server:
         elif command == "9":
             self.confirmLogin(),      #LOGIN
         elif command == "1":
-            self.createRoom(roomName, rPassW)
+            self.createRoom(c,a)
         elif command == "2":
             self.deleteRoom(roomName, rPassW)
         elif command == "3":
@@ -266,7 +470,7 @@ class Server:
         elif command == "5":
             self.sendToAll(msg, room)
         elif command == "6":
-            self.printMenu()
+            self.printMenu(c,a)
         elif command == "7":
             self.disconnect(c, a)
         elif command == "10":
