@@ -6,7 +6,7 @@ from sys import argv, stdout, exit
 import random                                                      
 import os
 
-import room
+from room import *
 
 class Client:
     
@@ -17,10 +17,25 @@ class Client:
 
     actualRoom = []
 
-    
+    def createRoom(self):
+        pass
+    def deleteRoom(self):
+        pass
+    def changeRoom(self):
+        pass
+    def enterRoom(self):
+        pass
+    def seeAllRooms(self):
+        pass
+    def listenRoom(self):
+        pass    
 
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def sendMsg(self, roomName):
+        pass
+
     def sendMsg(self):
         while True:
             try:

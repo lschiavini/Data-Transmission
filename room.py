@@ -1,12 +1,12 @@
 from server import *
 
-class Room(Server):
+class Room:
     name = ""
     passW = "None"
     isVip = False
     numberUser = 0
     
-    users = []
+    users = []#Object Users
 
     # if no passWord, not VIP check
 
@@ -46,8 +46,12 @@ class Room(Server):
     def getNumberUsers(self):
         return self.numberUser
 
-    def addUser(self):
+    def addUser(self, usrName, c):
         self.numberUser = self.numberUser + 1
+        self.users.extend[user]
+    
+    def getUsers(self):
+        return self.users
 
     def __del__(self):
         print("Room " + self.name + " deleted...")
