@@ -1,8 +1,13 @@
-class Room:
+from server import *
+
+class Room(Server):
     name = ""
     passW = "None"
     isVip = False
     numberUser = 0
+    
+    users = []
+
     # if no passWord, not VIP check
 
     def __init__(self, namey = None, passey = None):
@@ -46,18 +51,4 @@ class Room:
 
     def __del__(self):
         print("Room " + self.name + " deleted...")
-
-rooms = []
-
-for number in range(10):
-    rooms.append(Room("Asshole" + str(number), ))
-    print("Room Name: " + rooms[number].getName() + "\tPassWord: " + rooms[number].getPassW())
-    
-
-print (len(rooms))
-
-for n in range(len(rooms)):
-    if rooms[n].getName() == "Asshole0":
-        rooms.remove(rooms[n])
-        break
 

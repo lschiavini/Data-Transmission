@@ -6,12 +6,16 @@ from sys import argv, stdout, exit
 import random                                                      
 import os
 
+import room
 
 class Client:
     
+    SIZEMESSAGE = 4096
     accessMenu = {
-        "menu" : "_"
+        "menu" : "@"
     }   #type menu
+
+    actualRoom = []
 
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,10 +31,11 @@ class Client:
     def recvMsg(self):
         while True:
             try:
-                data = self.sock.recv(1024)
+                data = self.sock.recv(self.SIZEMESSAGE)
                 if not data:
                     break
-                print(str(data, 'utf-8'))
+                message = str(data[1:], 'utf-8')
+                print(message)
             except (KeyboardInterrupt, SystemExit):
                 stdout.flush()
                 print ('\nConnection to server closed.')   #Close server
