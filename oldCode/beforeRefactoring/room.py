@@ -2,18 +2,16 @@ from server import *
 from user import *
 
 class Room:
+    name = ""
+    passW = "None"
+    isVipVar = False
+    numberUser = 0
     
+    users = []#Object Users
 
     # if no passWord, not VIP check
 
     def __init__(self):#, namey = None, passey = None):
-        
-        self.users = []#Object Users
-        self.numberUser = 0
-        self.name = ""
-        self.passW = "None"
-        self.isVipVar = False
-        
         #condNameNone = namey == None
         #condPassNone = passey == None
         #if not (condNameNone and condPassNone):
@@ -45,7 +43,7 @@ class Room:
     def getNumberUsers(self):
         return self.numberUser
 
-    def addUser(self, user):
+    def addUser(self, c, user ):
         self.numberUser = self.numberUser + 1
         self.users.append(user)
     

@@ -23,10 +23,7 @@ class Server:
         #   format: object user
         #   data(either command or message)
 
-    userMenuCommand = {64:"@",
-                        37:"%"}
-
-    ####GUI FUNCT
+    userMenuCommand = {64:"@"}
 
     def printWelcome(self, c, a):
         self.clearScreen(c,a)
@@ -56,172 +53,108 @@ class Server:
     def roomGUI(self,c,a, room):
         RoomGUI = """//////WELCOME TO """+room.getName() +""" ROOM
             @ : MENU \n  
-            >> Press @ to go back to Menu\n
-            >> Press % to see Users in this Room"""
+            >> Press @ to go back to Menu\n"""
         self.sendToUser(c, RoomGUI)
 
-####STATE MACHINE
-
-    def handler(self, c, a):
-        iUser = User()
-        self.initState(c,a, iUser)
-        
-        close = False
-        isMenuFirst = True
-        try:
-            print(" New User added: " + iUser.getName() + "\n")
-        except(Exception):
-            pass
-        self.menu(c, a, iUser, isMenuFirst)
-        self.disconnect( c, a,iUser)
 
 
-    def initState(self, c, a, iUser):
-        global connections
-        close = False
-        data = ""
-        self.printWelcome(c,a)        
-        #Create a user
-        self.printAllUsr()
-        close = self.createUsr(c,a, iUser)
-        #Prints menu
-        self.clearScreen(c,a)
-        self.printMenu(c,a)
-        
 
-    def menu(self, c, a, iUser, isMenuFirst):
-        #while not Exit
-         #looking at the menu
-        userExit = False
-        while not userExit:
-            notNumber = False
-            chatRoomEnable = False
-            command = bytes("10",'utf-8')
-            while not notNumber:
-                notNumber =  (command >= bytes("1",'utf-8')) and (command <= bytes("6",'utf-8'))
-                try:
-                    self.clearScreen(c,a)
-                    self.printMenu(c,a)
-                    self.sendToUser( c,"\tWrite a number from 1 to 6")
-                    (close, command) = self.userListener(c, a, iUser, isMenuFirst)
-                    
-                    command = str(command, "utf-8")
-                    print("COMMAND: " + command + "\n")
-                except:
-                    pass   
-            if command == "1":
-                print("CREATE\n")
-                (close, chatRoomEnable) = self.createRoom( c, a, iUser)
-            elif command == "2":
-                print("DELETE\n")
-                self.deleteRoom( c, a)
-            elif command == "3":
-                print("SHOW ALL ROOMS\n")
-                self.showRoomsMenu( c, a)
-            elif command == "4":
-                print("ENTER\n")
-                chatRoomEnable = self.confirmEnter( c, a, iUser) #TODOIST: needs to enter chatRoom
-            elif command == "5":
-                print("MENU\n")
-                self.printMenu( c, a)
-            elif command == "6":
-                print("EXIT\n")
-                userExit = True
-            elif command == "10":
-                print("SEU PEBA")
-            else:
-                pass
-                
-            if chatRoomEnable:
-                #chatRoom
-                self.chatRoom(c, a, iUser, isMenuFirst)
-                chatRoomEnable = False
-            else:
-                pass
-
-            isMenuFirst = False
 
     def chatRoom(self,c,a, iUser, isMenuFirst):
         close = False
         data = []
         isMenuFirst = False
-        goMenu = False
-        seeUsers = False
 
         for rum in self.roomVector:
             if rum.hasUser(iUser):
                 self.roomGUI(c,a,rum)
-        while not goMenu:
-            (close, bytedata) = self.userListener(c, a, iUser, isMenuFirst)
-            
-            if bytedata is not None:
-                goMenu = self.callMenu(c, a, bytedata)
-                seeUsers = self.callSeeUsers(c, a, bytedata)
 
-                if seeUsers:
-                    rum = self.findRoomFromUser(iUser)
-                    self.whoAmItalkingTo(c, rum)
+        (close, data) = self.userListener(c, a, iUser, isMenuFirst)
 
-                if goMenu:
-                    self.exitRoom( c, a, iUser)
-                    break
-                data = str(bytedata, "utf-8")
-
-                condiUserInRoom = self.updateRooms(iUser, data) 
-
-                if (condiUserInRoom):
-                    self.sendToUser(c, " \n")
-                else:
-                    #needs to enter a Room to Talk
-                    self.sendToUser(c, " You need to be connected to a Room to talk.")
-                    break
-
-        return (close, data, isMenuFirst, goMenu) #isMenu
+        return (close, data, isMenuFirst) #isMenu
     
-    def userListener(self, c, a, iUser, isMenuFirst):
-            data = None
-            if (isMenuFirst is None):
-                isMenuFirst = False
-            
-            if (isMenuFirst):
+    def menu(self, c, a, iUser, isMenuFirst):
+        #while not Exit
+        #while not Room
+         #looking at the menu
+        notNumber = False
+        isInRoom = False
+        command = bytes("10",'utf-8')
+        while not notNumber:
+            notNumber =  (command >= bytes("1",'utf-8')) and (command <= bytes("6",'utf-8'))
+            try:
+                self.clearScreen(c,a)
+                self.printMenu(c,a)
+                self.sendToUser( c,"\tWrite a number from 1 to 6")
+                (close, command) = self.userListener(c, a, iUser, isMenuFirst)
+                
+                command = str(command, "utf-8")
+                print("COMMAND: " + command + "\n")
+            except:
+                pass   
+        if command == "1":
+            print("CREATE\n")
+            (close, isInRoom) = self.createRoom(c,a, iUser)
+            if isInRoom:
+                return isInRoom
+        elif command == "2":
+            print("DELETE\n")
+            self.deleteRoom(c,a)
+        elif command == "3":
+            print("SHOW ALL ROOMS\n")
+            self.showAllRooms(c,a)
+            self.sendToUser(c," Press @ to go back")
+            while True:
                 (close, data) = self.recvMsg(c, a)
-                data = str(data,'utf-8')
-                return (close, data)
-            else:    
-                try:
-                    self.sendToUser(c, " >>")
-                    (close, bytedata) = self.recvMsg(c, a)
-                    return (close, bytedata)
-                except:
-                    pass
+                isMenu = self.callMenu(c, a, data)
+                if isMenu:
+                    (close, data) = self.recvMsg(c, a)
+                    data = str(data,'utf-8')
+                    break
+        elif command == "4":
+            print("ENTER\n")
+            isInRoom = self.confirmEnter(c, a, iUser)
+            return isInRoom
+        elif command == "5":
+            print("MENU\n")
+            self.printMenu(c,a)
+        elif command == "6":
+            print("EXIT\n")
+            self.disconnect(c, a)
+        elif command == "10":
+            print("SEU PEBA")
+        else:
+            pass
 
-    def callMenu(self, c, a, data):
-        try:
-            comData = data[0]
-            condMenu = (comData == ord(self.userMenuCommand.get(64)))       
-            if (condMenu):
-                print("COND MENU")
-                return True
-        except (Exception):
-            pass    
-        return False
+                    
+    def stateMachine(self,c,a,iUser, isInRoom, isMenuFirst):
+        close = False
+        data = ""
+        print("isInRoom : " + str(isInRoom))
+        if (isInRoom):
+            (close,data, isInRoom) =self.chatRoom(c,a,iUser, isMenuFirst)
+        else:
+            isInRoom = self.menu(c, a, iUser, isMenuFirst)
+        return isInRoom
 
-    def callSeeUsers(self, c, a, data):
+    def devMenu(self, c, a, iUser):
 
-        try:
-            comData = data[0]
-            condSeeWho = (comData == ord(self.userMenuCommand.get(37)))       
-            print("LAZY DEBUG")
-            if (condSeeWho):
-                print("COND MENU")
-                return True
-        except (Exception):
-            pass    
-        return False
-
-    
-
-####USER FUNCT
+        self.clearScreen(c,a)
+        self.printMenu(c,a)
+        #Create a Room
+        #close = self.createRoom(c, a, iUser)
+        #add user to Room
+        #self.confirmEnter(c, a, iUser)
+        #Talk freely
+        
+        close = False
+        isMenuFirst = True
+        isInRoom = False
+        isInRoom = self.menu(c, a, iUser, isMenuFirst)
+        isMenuFirst = False
+        while True:
+            isInRoom = self.stateMachine(c,a,iUser,isInRoom,isMenuFirst)
+            return close
 
     def createUsr(self, c, a, newUser):
 
@@ -253,24 +186,22 @@ class Server:
                         self.userVector.append(newUser)
                         self.clearScreen(c,a)
                         self.sendToUser(c," New User Added...Going to Login\n\n\n\n\n")
-                        (success,userObj) = self.confirmLogin(c,a, newUser)
-                        if success:
-                            return close
+                        userObj = self.confirmLogin(c,a, newUser)
+
+                        return close
                     else:
                         pass
             else:
                 #User already being used, go to Login
                 self.sendToUser(c," User already exists... Do you want to go to Login? (Y/n)\n")
-                
                 (close, data) = self.receiveStrMessage(c, a)
                 yesNo = data
                 condNo = (yesNo == "N") or (yesNo == "n") 
                 condYes = (yesNo == "Y") or (yesNo == "y")
                 if (condYes):
                     #go to Login
-                    (success,userObj) = self.confirmLogin(c,a, newUser)
-                    if success:
-                        return close
+                    userObj = self.confirmLogin(c,a, newUser)
+                    return close
                 elif(condNo):
                     #ask for another userName input
                     pass
@@ -291,23 +222,10 @@ class Server:
             if(condTestPass):
                 for u in self.userVector:
                     if (u.getName() == userObj.getName()):
-                        try:
-                            print("LAZYDEBUG")
-                            print(str(u.hasConnection()))
-                            if u.hasConnection():
-                                print("GOT HERE - IF")    
-                                self.sendToUser(c," User Already signed in...")
-                                #self.createUsr(c, a, iUser) 
-                                return (False, None)
-                            else:
-                                print("GOT HERE - ELSE")
-                                u.setConnection(c)
-                                self.sendToUser(c," Logged In, You Welcome ")  
-                                Event().wait(1.5)           
-                                return (True, u)
-                        except (Exception):
-                            pass  
-                        
+                        u.setConnection(c)
+                        self.sendToUser(c," Logged In, You Welcome ")  
+                        Event().wait(1.5)           
+                        return (True, u)
             else:
                 self.sendToUser(c," LOGIN\n Wrong Password. Do you Want to Try again?(Y/n) ")
                 (close, data) = self.receiveStrMessage(c, a)
@@ -320,9 +238,6 @@ class Server:
                 elif(condNo):
                     #ask for another userName input
                     self.createUsr(c,a, iUser)
-                
-                    
-
 
     def printAllUsr(self):
         print("User List ------- Pass List\n")
@@ -333,16 +248,12 @@ class Server:
         #Tests User/password
         #If it passes the test returns True, else False
         newUser = User()
-        
-
         if (len(self.userVector) > 0):
-
             print("There are Users")
-
             if (passW == None):
                 #Tests if user isn't already being used
                 for usr in self.userVector:
-                    #print("User: " + userName + "\tVectUser: " + usr.getName())
+                    print("User: " + userName + "\tVectUser: " + usr.getName())
                     if (usr.getName() == userName):
                         return (False,newUser)
                 return (True,usr)
@@ -356,8 +267,31 @@ class Server:
             print(" There are no Users")
             return (True, newUser)
 
-####ROOM FUNCT
+    def handler(self, c, a):
+        global connections
+        close = False
+        data = ""
 
+        self.printWelcome(c, a)
+
+        
+        #Create a user
+        self.printAllUsr()
+        iUser = User()
+        close = self.createUsr(c, a, iUser)
+
+        while True:
+            #close = self.userFlow(c , a)            
+            close = self.devMenu(c , a, iUser)
+            #(close, data) = self.usrListener(c, a)
+            if (close):
+                break
+            else:
+                pass
+
+    def writeUsr2File(self, user, passW, roomName, rPassW):
+        pass
+    
     def createRoom(self, c, a, user):
         newRoom = Room()
         isInRoom = False
@@ -468,6 +402,8 @@ class Server:
                         return rum
         return False
 
+
+
     def confirmEnter(self, c, a, user):
         #Room exists? if yes testRoomPass, else createRoom
         #   Assigns connection to User
@@ -492,27 +428,22 @@ class Server:
             else:
                 pass
             
+            
             print(str(condHasPass) + "  " + roomObj.getName())
             
+            self.findRoom(roomName)
             if condHasPass: 
                 #The Room does have a password
                 self.sendToUser(c," Please write the Room Password: ")
                 (close, passW) = self.receiveStrMessage(c, a)
 
                 (condTestPass, roomObj) = self.testRoomPass(roomName, passW)
-               
+                print(str(condTestPass) + " room found: " + roomObj.getName() + "Pass: " + roomObj.getPass())
                 if(condTestPass):
-                    for n in range(len(self.roomVector)):
-                        if (self.roomVector[n].getName() == roomObj.getName()):
-                            self.roomVector[n].addUser( user)
-
-                            print("LIST OF ROOMS" + "\n")
-                            for rum in self.roomVector:
-                                self.showUsrInRoom(rum)
-
+                    for rum in self.roomVector:
+                        if (rum.getName() == roomObj.getName()):
+                            rum.addUser(c, user)
                             self.sendToUser(c," Entered the Room, Have a nice chat :P ")  
-                            self.sendToRoom("::: "+ user.getName() + " Entered the Room", self.roomVector[n], user)  
-                            
                             Event().wait(1.5)
                             self.clearScreen(c,a)        
                             isInRoom = True
@@ -529,20 +460,12 @@ class Server:
                         break
             else:
                 #The room is non Vip
-                for n in range(len(self.roomVector)):
-                    #print(str(" room found: " + rum.getName() + "Pass: " + rum.getPass()))
-                    if (self.roomVector[n].getName() == roomObj.getName()):
+                for rum in self.roomVector:
+                    print(str(" room found: " + rum.getName() + "Pass: " + rum.getPass()))
+                    if (rum.getName() == roomObj.getName()):
                         #user.setRoom(rum)
-
-                        self.roomVector[n].addUser( user)
-                                                
-                        print("LIST OF ROOMS" + "\n")
-                        for rum in self.roomVector:
-                            self.showUsrInRoom(rum)
-                        
+                        rum.addUser(c, user)
                         self.sendToUser(c," Entered the Room, Have a nice chat :P ")  
-                        self.sendToRoom("::: "+ user.getName() + " Entered the Room", self.roomVector[n], user)  
-                        
                         Event().wait(1.5)
                         self.clearScreen(c,a)         
                         isInRoom = True
@@ -555,65 +478,43 @@ class Server:
                 break
         return isInRoom
 
-    def exitRoom(self, c, a, iUser):
-        room = self.findRoomFromUser(iUser)
-        room.removeUser(iUser)
-        print("USER REMOVED FROM ROOM")
-                
+    def exitRoom(self, c, a, room, iUser):
+        room.removeUser(c, iUser)
+
     def deleteRoom(self,c,a):
         self.clearScreen(c,a)
         self.showAllRooms(c,a )
         self.sendToUser(c," \n\n Which Room do You want to delete? ")  
         (close, data) = self.receiveStrMessage(c, a)
-        (exists, roomObj) = self.findRoom(data)
+        (exists, room) = self.findRoom(data)
         
         if exists:
             while True:
-                if roomObj.getIsVip():
-                    self.sendToUser(c," \n\n Write the Room PassWord: ")
-                else:
-                    for n in range(len(self.roomVector)):
-                        condName = self.roomVector[n].getName() == roomObj.getName()
-                        condPassW = self.roomVector[n].getPass() == roomObj.getPass()
-                        if condName:
-                            if condPassW:
-                                self.roomVector.remove(self.roomVector[n])
-                                return True
-                            else:
-                                #ask password to client
-                                while True:
-                                    self.sendToUser(c," \n\n Wrong PassWord, Try again?(Y/n) ") 
-                                    (close, yesNo) = self.receiveStrMessage(c, a)
-                                
-                                    condNo = (yesNo == "N") or (yesNo == "n") 
-                                    condYes = (yesNo == "Y") or (yesNo == "y")
-                                    if condYes:
-                                        break
-                                    elif condNo:
-                                        return False
+                self.sendToUser(c," \n\n Write the Room PassWord: ")
+
+                for n in range(len(self.roomVector)):
+                    condName = self.roomVector[n].getName() == roomObj.getName()
+                    condPassW = self.roomVector[n].getPass() == roomObj.getPass()
+                    if condName:
+                        if condPassW:
+                            self.roomVector.remove(self.roomVector[n])
+                            return True
+                        else:
+                            #ask password to client
+                            while True:
+                                self.sendToUser(c," \n\n Wrong PassWord, Try again?(Y/n) ") 
+                                (close, yesNo) = self.receiveStrMessage(c, a)
+                            
+                                condNo = (yesNo == "N") or (yesNo == "n") 
+                                condYes = (yesNo == "Y") or (yesNo == "y")
+                                if condYes:
+                                    break
+                                elif condNo:
+                                    return False
         else:
             self.sendToUser(c," \n\n Room doesn't exist ")  
             return False
 
-
-    def whoAmItalkingTo(self, c, room):
-        message = "LIST OF USERS: \n"
-        self.sendToUser(c, " " + message + "\n\n")
-        for rum in self.roomVector:
-            if rum.getName() == room.getName():
-                users = rum.getUsers()
-                for u in users:
-                    self.sendToUser(c,"\tUser: " + u.getName() +"\n")
-
-    def showUsrInRoom(self, room):
-        print("ROOM NAME: " + room.getName()+"\n")
-        for rum in self.roomVector:
-            if rum.getName() == room.getName():
-                users = rum.getUsers()
-                if (users is not None):
-                    for u in users:
-                        print("\tUser: " + u.getName() +"\n")
-                        
     def showAllRooms(self,c,a):
         message = " Rooms Available: \n"
         self.sendToUser(c, message)
@@ -621,18 +522,52 @@ class Server:
             #print("\tVectroom: " + self.roomVector[n].getName()+ "\tPASSoom: " + self.roomVector[n].getPass())
             message = " " + self.roomVector[n].getName()
             if(self.roomVector[n].getIsVip()):
-                message = message + " LOCKED" 
-            message = message + " Users: " + str(self.roomVector[n].getNumberUsers()) 
+                message = message + " LOCKED"  
             self.sendToUser(c, " " + message + "\n\n")
 
-    def showRoomsMenu(self,c,a):
-        self.showAllRooms(c,a)
-        self.sendToUser(c," Press @ to go back")
+    def callMenu(self, c, a, data):
+        comData = data[0]
+        condMenu = (comData == ord(self.userMenuCommand.get(64)))       
+        if (condMenu):
+            print("COND MENU")
+            return True
+        return False
+
+    def userListener(self, c, a, iUser, isMenuFirst):
+        data = None
+        if (isMenuFirst is None):
+            isMenuFirst = False
         while True:
-            (close, data) = self.recvMsg(c, a)
-            isMenu = self.callMenu(c, a, data)
-            if isMenu:
-                break
+            if (isMenuFirst):
+                (close, data) = self.recvMsg(c, a)
+                data = str(data,'utf-8')
+                return(close, data)
+            else:    
+                try:
+                    self.sendToUser(c, " >>")
+                    isMenu = False
+
+                    while not isMenu:
+                        (close, bytedata) = self.recvMsg(c, a)
+                        isMenu = self.callMenu(c, a, bytedata)
+                        if isMenu:
+                            actRoom = self.findRoomFromUser(iUser)
+                            actRoom.removeUser(iUser)
+                            print("USER REMOVED FROM ROOM")
+                            break
+                        data = str(bytedata, "utf-8")
+
+                        condiUserInRoom = self.updateRooms(iUser, data) 
+
+                        if (condiUserInRoom):
+                            self.sendToUser(c, " \n")
+                        else:
+                            #needs to enter a Room to Talk
+                            self.sendToUser(c, " You need to be connected to a Room to talk.")
+                            break
+                    return(close,data)
+                except:
+                    break
 
     def updateRooms(self,iUser, msg):  
         try:
@@ -650,14 +585,7 @@ class Server:
                 print(str(rum.getName())+" Room Empty\n\n")
         return False
 
-
-
-####MSG FUNCT
-
     def sendToRoom(self, msg, room, iUser):
-        for rum in self.roomVector:
-            self.showUsrInRoom(rum)
-
         if room is not None:
             users = room.getUsers()  
             for u in users:
@@ -711,18 +639,15 @@ class Server:
             #   recv  = receiving data from the connection
             #   arg is number of bytes
             if not data:
-                #self.disconnect(c, a)
+                self.disconnect(c, a)
                 close = True
             else:
                 data = str(data, "utf-8")
                 data = bytes(data, 'utf-8')
             return (close, data)
 
-####SERVER FUNCT
-
-    def disconnect(self, c, a,  iUser):
+    def disconnect(self, c, a):
         print(str(a[0]) + ": " + str(a[1]) + " disconnected")
-        iUser.remConnection()
         self.connections.remove(c)
         c.close()
 

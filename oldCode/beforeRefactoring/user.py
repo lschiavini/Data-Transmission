@@ -2,14 +2,15 @@ from server import *
 from room import *
 
 class User:
-
-    
+    username = ""
+    passWord = ""
+    actualConnection = []
     hasConn = False
-    def __init__(self):
-        self.username = ""
-        self.passWord = ""
-        self.actualConnection = []
-        self.hasConn = False
+
+    def __init__(self, user, passW, c, room = None):
+        self.username = user
+        self.passWord = passW
+        self.actualConnection = c
         
     def __init__(self):
         pass
@@ -26,17 +27,11 @@ class User:
     
     def setConnection(self, c):
         self.hasConn = True
-        self.actualConnection = c  
-
+        self.actualConnection = c    
     def hasConnection(self):
         return self.hasConn
-
     def getConnection(self):
         return self.actualConnection
-    
-    def remConnection(self):
-        self.hasConn = False
-        self.actualConnection = None
     
 
     
