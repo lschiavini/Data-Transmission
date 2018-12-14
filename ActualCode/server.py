@@ -25,8 +25,10 @@ class Server:
 
     userMenuCommand = {64:"@",
                         37:"%"}
+    
+    charStartFileTrans = "!"
 
-    ####GUI FUNCT
+####GUI FUNCT
 
     def printWelcome(self, c, a):
         self.clearScreen(c,a)
@@ -56,8 +58,9 @@ class Server:
     def roomGUI(self,c,a, room):
         RoomGUI = """//////WELCOME TO """+room.getName() +""" ROOM
             @ : MENU \n  
-            >> Press @ to go back to Menu\n
-            >> Press % to see Users in this Room"""
+            >> Press @ to go back to Menu
+            >> Press % to see Users in this Room
+            >> Press ! to send Files\n"""
         self.sendToUser(c, RoomGUI)
 
 ####STATE MACHINE
@@ -155,16 +158,21 @@ class Server:
             (close, bytedata) = self.userListener(c, a, iUser, isMenuFirst)
             
             if bytedata is not None:
-                goMenu = self.callMenu(c, a, bytedata)
-                seeUsers = self.callSeeUsers(c, a, bytedata)
+                goMenu = self.callMenu(c,a,bytedata)
+                seeUsers = self.callSeeUsers(c,a,bytedata)
+                sendFiles = self.callSendFiles(c,a,bytedata)
 
                 if seeUsers:
                     rum = self.findRoomFromUser(iUser)
                     self.whoAmItalkingTo(c, rum)
-
                 if goMenu:
                     self.exitRoom( c, a, iUser)
                     break
+                if sendFiles:
+                    rum = self.findRoomFromUser(iUser)
+                    self.sendFilesToRoom(rum, iUser)
+                    
+
                 data = str(bytedata, "utf-8")
 
                 condiUserInRoom = self.updateRooms(iUser, data) 
@@ -207,19 +215,26 @@ class Server:
         return False
 
     def callSeeUsers(self, c, a, data):
-
         try:
             comData = data[0]
             condSeeWho = (comData == ord(self.userMenuCommand.get(37)))       
-            print("LAZY DEBUG")
             if (condSeeWho):
-                print("COND MENU")
+                print("COND SEE USERS")
                 return True
         except (Exception):
             pass    
         return False
-
     
+    def callSendFiles(self,c,a,data):
+        try:
+            comData = data[0]
+            condSendFiles = (comData == ord(self.charStartFileTrans))      
+            if (condSendFiles):
+                print("COND SEND FILES")
+                return True
+        except (Exception):
+            pass    
+        return False
 
 ####USER FUNCT
 
@@ -651,12 +666,11 @@ class Server:
         return False
 
 
-
 ####MSG FUNCT
 
     def sendToRoom(self, msg, room, iUser):
-        for rum in self.roomVector:
-            self.showUsrInRoom(rum)
+        #for rum in self.roomVector:
+        #    self.showUsrInRoom(rum)
 
         if room is not None:
             users = room.getUsers()  
@@ -718,7 +732,80 @@ class Server:
                 data = bytes(data, 'utf-8')
             return (close, data)
 
+    def sendFilesToRoom(self,room,iUser):
+        if room is not None:
+            users = room.getUsers()
+            for u in users:
+                if str(u.getName()) != str(iUser.getName()):
+                    connection = u.getConnection()
+                    if connection is not None:
+                        try:
+                            print("GOT HERE")
+                            self.sendFiles2Client(connection)
+                        except(ConnectionResetError):
+                            #   Checks if connection was closed by peer
+                            pass
+                        except(Exception):
+                            pass
+        else:
+            pass
+
+
+
+    def sendFiles2Client(self,c):
+        
+        fileName='TD_work.pdf' #In the same folder or path is this file running must the file you want to tranfser to be
+        path = self.createServerDir()
+        filePath = path + "/" + fileName
+
+        startFileTrans = bytes(self.charStartFileTrans,'utf-8')
+        c.send(startFileTrans)
+        print("Sending Files")
+
+        with open(filePath, 'rb') as f:
+            print("GOT HERE LAZY ASS")
+            c.sendfile(f, 0)
+        f.close()
+        endString = "@endfile"
+        endFile = endString.encode('utf-8').strip()
+        c.send(endFile)
+        print('Done sending')
+
+    def receiveFileFClient(self,c,a):
+
+        fileName='TD_work.pdf' #In the same folder or path is this file running must the file you want to tranfser to be
+        path = self.createServerDir()
+        filePath = path + "/" + fileName
+        
+        with open(filePath, 'wb') as f:
+            print ('File opened')                
+            while True:
+                print('receiving data...')
+                data = c.recv(self.CHUNK_SIZE)
+                msg = repr(data)
+
+                if msg.find("@endfile") != -1:
+                    data = data[:-8]
+                    f.write(data)
+                    #print("Out we go")
+                    break
+                if (not data):
+                    #print("Out we go")
+                    break
+                
+                f.write(data)
+
+        print("Got File")
+        f.close()
+
 ####SERVER FUNCT
+
+    def createServerDir(self):
+        dir = ""
+        dir = os.path.join(dir, 'ServerFiles')
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        return dir
 
     def disconnect(self, c, a,  iUser):
         print(str(a[0]) + ": " + str(a[1]) + " disconnected")
