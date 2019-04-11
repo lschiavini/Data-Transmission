@@ -197,7 +197,8 @@ class Server:
                 return (close, data)
             else:    
                 try:
-                    self.sendToUser(c, " >>")
+                    stringUser =">> "
+                    self.sendToUser(c, stringUser)
                     (close, bytedata) = self.recvMsg(c, a)
                     return (close, bytedata)
                 except:
@@ -336,9 +337,6 @@ class Server:
                     #ask for another userName input
                     self.createUsr(c,a, iUser)
                 
-                    
-
-
     def printAllUsr(self):
         print("User List ------- Pass List\n")
         for u in self.userVector:
@@ -610,7 +608,6 @@ class Server:
             self.sendToUser(c," \n\n Room doesn't exist ")  
             return False
 
-
     def whoAmItalkingTo(self, c, room):
         message = "LIST OF USERS: \n"
         self.sendToUser(c, " " + message + "\n\n")
@@ -671,21 +668,20 @@ class Server:
     def sendToRoom(self, msg, room, iUser):
         #for rum in self.roomVector:
         #    self.showUsrInRoom(rum)
-
         if room is not None:
             users = room.getUsers()  
             for u in users:
-                if str(u.getName()) != str(iUser.getName()):
-                    connection = u.getConnection()
-                    if connection is not None:
-                        try:
-                            #if msg is not None:
-                            connection.send(bytes(msg, 'utf-8'))
-                        except(ConnectionResetError):
-                            #   Checks if connection was closed by peer
-                            pass
-                        except(Exception):
-                            pass
+                #if str(u.getName()) != str(iUser.getName()):
+                connection = u.getConnection()
+                if connection is not None:
+                    try:
+                        #if msg is not None:
+                        connection.send(bytes(msg, 'utf-8'))
+                    except(ConnectionResetError):
+                        #   Checks if connection was closed by peer
+                        pass
+                    except(Exception):
+                        pass
         else:
             pass
 
