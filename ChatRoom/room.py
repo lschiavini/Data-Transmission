@@ -12,17 +12,7 @@ class Room:
         self.numberUser = 0
         self.name = ""
         self.passW = "None"
-        self.isVipVar = False
-        
-        #condNameNone = namey == None
-        #condPassNone = passey == None
-        #if not (condNameNone and condPassNone):
-        #    self.name = namey
-        #    self.passW = "None"
-        #else:
-        #    pass
-        pass
-    
+        self.isVipVar = False   
 
     def setName(self, name):
         self.name = name

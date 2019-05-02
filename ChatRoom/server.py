@@ -47,10 +47,9 @@ class Server:
                         MENU \n  
                 1 : CREATE ROOM \n
                 2 : DELETE ROOM \n
-                3 : SHOW ALL ROOMS \n
-                4 : ENTER ROOM \n
-                5 : MENU \n
-                6 : EXIT :( 
+                3 : ENTER ROOM \n
+                4 : MENU \n
+                5 : EXIT :( 
                 
         >> Press any number you want to enter Menu Options\n"""
             self.sendToUser(c, printMenu)
@@ -119,15 +118,12 @@ class Server:
                 print("DELETE\n")
                 self.deleteRoom( c, a)
             elif command == "3":
-                print("SHOW ALL ROOMS\n")
-                self.showRoomsMenu( c, a)
-            elif command == "4":
                 print("ENTER\n")
-                chatRoomEnable = self.confirmEnter( c, a, iUser) #TODOIST: needs to enter chatRoom
-            elif command == "5":
+                chatRoomEnable = self.confirmEnter( c, a, iUser)
+            elif command == "4":
                 print("MENU\n")
                 self.printMenu( c, a)
-            elif command == "6":
+            elif command == "5":
                 print("EXIT\n")
                 userExit = True
             elif command == "10":
@@ -308,15 +304,12 @@ class Server:
                 for u in self.userVector:
                     if (u.getName() == userObj.getName()):
                         try:
-                            print("LAZYDEBUG")
-                            print(str(u.hasConnection()))
+                            #print(str(u.hasConnection()))#True or False
                             if u.hasConnection():
-                                print("GOT HERE - IF")    
                                 self.sendToUser(c," User Already signed in...")
                                 #self.createUsr(c, a, iUser) 
                                 return (False, None)
                             else:
-                                print("GOT HERE - ELSE")
                                 u.setConnection(c)
                                 self.sendToUser(c," Logged In, You Welcome ")  
                                 Event().wait(1.5)           
@@ -481,6 +474,23 @@ class Server:
                         return rum
         return False
 
+    def enterRoom(self, c, a, user, roomName):
+        for n in range(len(self.roomVector)):
+            if (self.roomVector[n].getName() == roomName):
+                self.roomVector[n].addUser(user)
+
+                print("LIST OF ROOMS" + "\n")
+                for rum in self.roomVector:
+                    self.showUsrInRoom(rum)
+
+                self.sendToUser(c," Entered the Room, Have a nice chat :P ")  
+                self.sendToRoom("::: "+ user.getName() + " Entered the Room", self.roomVector[n], user)  
+                
+                Event().wait(1.5)
+                self.clearScreen(c,a)        
+                isInRoom = True
+                return isInRoom
+
     def confirmEnter(self, c, a, user):
         #Room exists? if yes testRoomPass, else createRoom
         #   Assigns connection to User
@@ -515,21 +525,9 @@ class Server:
                 (condTestPass, roomObj) = self.testRoomPass(roomName, passW)
                
                 if(condTestPass):
-                    for n in range(len(self.roomVector)):
-                        if (self.roomVector[n].getName() == roomObj.getName()):
-                            self.roomVector[n].addUser( user)
-
-                            print("LIST OF ROOMS" + "\n")
-                            for rum in self.roomVector:
-                                self.showUsrInRoom(rum)
-
-                            self.sendToUser(c," Entered the Room, Have a nice chat :P ")  
-                            self.sendToRoom("::: "+ user.getName() + " Entered the Room", self.roomVector[n], user)  
-                            
-                            Event().wait(1.5)
-                            self.clearScreen(c,a)        
-                            isInRoom = True
-                            return isInRoom
+                    isInRoom = self.enterRoom(c,a,user, roomObj.getName())
+                    return isInRoom
+                    
                 else:
                     self.sendToUser(c," LOGIN\n Wrong Password. Do you Want to Try again?(Y/n) ")
                     (close, data) = self.receiveStrMessage(c, a)
