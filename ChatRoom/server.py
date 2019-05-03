@@ -403,8 +403,10 @@ class Server:
                             newRoom.isVip(True)
                             self.roomVector.append(newRoom)
                             self.clearScreen(c,a)
-                            self.sendToUser(c," New Room Added... Going back to Menu\n\n\n\n\n")
-                            isInRoom = self.confirmEnter(c,a, user)
+                            self.sendToUser(c," New Room Added... Entering\n\n\n\n\n")
+                            isInRoom = self.enterRoom(c,a,user, newRoom.getName())
+                            #isInRoom = self.confirmEnter(c,a, user)
+                            
                             return (close, isInRoom)
                         else:
                             pass
@@ -414,7 +416,8 @@ class Server:
                     self.roomVector.append(newRoom)
                     self.clearScreen(c,a)
                     self.sendToUser(c," New Room Added... Entering\n\n\n\n\n")
-                    isInRoom = self.confirmEnter(c,a, user)
+                    #isInRoom = self.confirmEnter(c,a, user)
+                    isInRoom = self.enterRoom(c,a,user, newRoom.getName())
                     return (close, isInRoom)
 
 
@@ -835,6 +838,8 @@ class Server:
             
 
 if __name__ == "__main__":
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+
     print("Trying to connect ...")
     try:
         server = Server()
