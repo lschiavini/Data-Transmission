@@ -35,6 +35,12 @@ class Room:
     def getNumberUsers(self):
         return self.numberUser
 
+    def isEmpty(self):
+        if self.getNumberUsers()!= 0:
+            return False
+        else:
+            return True
+
     def addUser(self, user):
         self.numberUser = self.numberUser + 1
         self.users.append(user)

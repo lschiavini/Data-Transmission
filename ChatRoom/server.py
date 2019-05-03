@@ -362,6 +362,13 @@ class Server:
             print(" There are no Users")
             return (True, newUser)
 
+    def findUsr(self, c):
+        for u in self.userVector:
+            condConn = u.hasConnection() and (u.getConnection() == c)
+            if(condConn):
+                return u
+            else:
+                return False    
 ####ROOM FUNCT
 
     def createRoom(self, c, a, user):
@@ -583,15 +590,22 @@ class Server:
         
         if exists:
             while True:
-                if roomObj.getIsVip():
-                    self.sendToUser(c," \n\n Write the Room PassWord: ")
-                else:
+                if (roomObj.isEmpty()): 
                     for n in range(len(self.roomVector)):
                         condName = self.roomVector[n].getName() == roomObj.getName()
-                        condPassW = self.roomVector[n].getPass() == roomObj.getPass()
+                        if roomObj.getIsVip():
+                            self.sendToUser(c," \n\n Write the Room Password: ")
+                            (close, password) = self.receiveStrMessage(c, a)    
+                        else:
+                            password = roomObj.getPass()
+                        condPassW = self.roomVector[n].getPass() == password
+
                         if condName:
                             if condPassW:
+                                print(" \n\n Room " +roomObj.getName() +" Removed ")
+                                self.sendToUser(c," \n\n Room " +roomObj.getName() +" Removed ")
                                 self.roomVector.remove(self.roomVector[n])
+                                Event().wait(1.5) 
                                 return True
                             else:
                                 #ask password to client
@@ -605,8 +619,13 @@ class Server:
                                         break
                                     elif condNo:
                                         return False
+            else:
+                self.sendToUser(c," \n\n Room is not empty for deletion ")  
+                Event().wait(1.0) 
+                return False 
         else:
-            self.sendToUser(c," \n\n Room doesn't exist ")  
+            self.sendToUser(c," \n\n Room doesn't exist ") 
+            Event().wait(1.0)  
             return False
 
     def whoAmItalkingTo(self, c, room):
@@ -722,7 +741,10 @@ class Server:
             #   recv  = receiving data from the connection
             #   arg is number of bytes
             if not data:
-                #self.disconnect(c, a)
+                iUser = self.findUsr(c)
+                if(iUser != False):
+                    self.disconnect(c, a, iUser)
+                print("User Disconnected")
                 close = True
             else:
                 data = str(data, "utf-8")
