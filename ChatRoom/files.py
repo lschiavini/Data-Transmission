@@ -1,7 +1,7 @@
 from server import *
 from room import *
 
-class User:
+class Files:
 
     
     hasConn = False
@@ -10,7 +10,9 @@ class User:
         self.passWord = ""
         self.actualConnection = []
         self.hasConn = False
-
+        
+    def __init__(self):
+        pass
 
     def setName(self, name):
         self.username = name

@@ -71,7 +71,7 @@ class Server:
         close = False
         isMenuFirst = True
         try:
-            print(" New User added: " + iUser.getName() + "\n")
+            print(" New User logged in: " + iUser.getName() + "\n")
         except(Exception):
             pass
         self.menu(c, a, iUser, isMenuFirst)
@@ -282,6 +282,11 @@ class Server:
                     #go to Login
                     (success,userObj) = self.confirmLogin(c,a, newUser)
                     if success:
+                        #newUser = userObj
+                        newUser.setConnection(c)
+                        newUser.setName(userObj.getName())
+                        newUser.setPass(userObj.getPass())
+                        self.userVector.append(newUser)
                         return close
                 elif(condNo):
                     #ask for another userName input
@@ -311,6 +316,7 @@ class Server:
                                 return (False, None)
                             else:
                                 u.setConnection(c)
+                                print("User " + u.getName() + " Logged In")
                                 self.sendToUser(c," Logged In, You Welcome ")  
                                 Event().wait(1.5)           
                                 return (True, u)
@@ -751,6 +757,35 @@ class Server:
                 data = bytes(data, 'utf-8')
             return (close, data)
 
+
+###FILES FUNCT
+
+    def fileExists(self, name):
+        pass
+    
+    def setFileName(self):
+        pass
+
+
+    def sendGenFiles2Client(self, c):
+            fileName='TD_work.pdf' #In the same folder or path is this file running must the file you want to tranfser to be
+            
+            path = self.createServerDir()
+            filePath = path + "/" + fileName
+
+            startFileTrans = bytes(self.charStartFileTrans,'utf-8')
+            c.send(startFileTrans)
+            print("Sending Files")
+
+            with open(filePath, 'rb') as f:
+                c.sendfile(f, 0)
+            f.close()
+            endString = "@endfile"
+            endFile = endString.encode('utf-8').strip()
+            c.send(endFile)
+            print('Done sending')
+
+
     def sendFilesToRoom(self,room,iUser):
         if room is not None:
             users = room.getUsers()
@@ -759,7 +794,6 @@ class Server:
                     connection = u.getConnection()
                     if connection is not None:
                         try:
-                            print("GOT HERE")
                             self.sendFiles2Client(connection)
                         except(ConnectionResetError):
                             #   Checks if connection was closed by peer
@@ -768,8 +802,6 @@ class Server:
                             pass
         else:
             pass
-
-
 
     def sendFiles2Client(self,c):
         
@@ -782,7 +814,6 @@ class Server:
         print("Sending Files")
 
         with open(filePath, 'rb') as f:
-            print("GOT HERE LAZY ASS")
             c.sendfile(f, 0)
         f.close()
         endString = "@endfile"
@@ -834,7 +865,6 @@ class Server:
 
 
 
-
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #   init conection: AF_INET -> IPv4
         #                   SOCK_STREAM -> TCP connection
@@ -865,9 +895,9 @@ if __name__ == "__main__":
     print("Trying to connect ...")
     try:
         server = Server()
-
         server.run()
     except KeyboardInterrupt:
+        print("Server shutting down...")
         stdout.flush()
         open("user_pass.txt", 'w').close()
         sys.exit(0);
