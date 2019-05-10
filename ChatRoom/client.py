@@ -35,7 +35,7 @@ class Client:
             print("Local: Sending Files")
 
             sendName = fileName.strip() + "\n"
-            #sendName = input(fileName)
+                
             self.sock.send(bytes(sendName, 'utf-8'))
                 #2 - Sends FileName
             with open(filePath, 'rb') as f:
@@ -49,9 +49,12 @@ class Client:
             print("Done sending")
         else: 
             print("DEBUG: $cancel")
-            cancelString = "$cancel"
-            cancelFile = cancelString.encode('utf-8').strip()
-            self.sock.send(cancelFile)
+            #cancelString = "$cancel"
+            #cancelFile = cancelString.encode('utf-8').strip()
+            #self.sock.send(cancelFile)
+            self.currentMsg = "$cancel"
+            self.sock.send(bytes("$cancel", 'utf-8'))
+            
         
         self.sendFileFlag = False
         self.sendMessageFlag = True

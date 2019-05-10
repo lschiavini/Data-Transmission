@@ -791,33 +791,34 @@ class Server:
         
         print("FileName got: " + "["+fileName+"]")
 
-        if (fileName != "$cancel"):
-            newFile = File(fileName)
+        newFile = File(fileName)
 
-            filePath = newFile.getServerDir() +  newFile.getName()    
-            #(close, startFile) = self.receiveStrMessage(c, a)
-            with open(filePath, 'wb') as f:
-                print ('File opened')                
-                while True:
-                    print('receiving data...')
-                    data = c.recv(self.CHUNK_SIZE)
-                    msg = repr(data)
+        filePath = newFile.getServerDir() +  newFile.getName()    
+        
+        with open(filePath, 'wb') as f:
+            print ('File opened')                
+            while True:
+                print('receiving data...')
+                data = c.recv(self.CHUNK_SIZE)
+                msg = repr(data)
 
-                    if msg.find("$endFile") != -1:
-                        print("DEBUG: $endFile")
-                        data = data[:-8]
-                        f.write(data)
-                        break
-                    if (not data):
-                        break
+                if msg.find("$endFile") != -1:
+                    print("DEBUG: $endFile")
+                    data = data[:-8]
                     f.write(data)
-            print("Got File")
-            f.close()
-            self.filesVector.append(newFile)
-            return newFile
-        else:
-            print("DEBUG: $cancel")
-            return None
+                    print("Got File")
+                    break
+                if msg.find("$cancel") != -1:
+                    print("Cancel")
+                    os.remove(filePath)
+                    break
+
+                if (not data):
+                    break
+                f.write(data)
+        f.close()
+        self.filesVector.append(newFile)
+        return newFile
         
     def sendFile(self, iUser, file2Send):
         c = iUser.getConnection()
