@@ -7,21 +7,97 @@ import random
 import os
 
 from room import *
+from file import *
 
 class Client:
     
-    charStartFileTrans = "!"
 
+    sendMessageFlag = True
+    sendFileFlag = False
+    currentMsg = ""
+
+    charStartFileTrans = "!"
+    filesVector = []
+        #   Object type File
     CHUNK_SIZE = 1024*8
     SIZEMESSAGE = 1024*4
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    def sendFileS(self):
+        
+        fileName = self.currentMsg
+
+        if self.testFileExists(fileName):
+            newFile = File(fileName)
+            path = newFile.getLocalDir()
+            filePath = path + newFile.getName()
+            print("Local: Sending Files")
+
+            sendName = fileName.strip() + "\n"
+            #sendName = input(fileName)
+            self.sock.send(bytes(sendName, 'utf-8'))
+                #2 - Sends FileName
+            with open(filePath, 'rb') as f:
+                self.sock.sendfile(f, 0)
+            f.close()
+                #3 - Sends File
+            endString = "$endFile"
+            endFile = endString.encode('utf-8').strip()
+            self.sock.send(endFile)
+                #4 - Sends EndFile
+            print("Done sending")
+        else: 
+            print("DEBUG: $cancel")
+            cancelString = "$cancel"
+            cancelFile = cancelString.encode('utf-8').strip()
+            self.sock.send(cancelFile)
+        
+        self.sendFileFlag = False
+        self.sendMessageFlag = True
+
+    def receiveFile(self):
+        data = self.sock.recv(self.SIZEMESSAGE)
+        fileName = data.decote('utf-8')
+
+        if (fileName != "$cancel"):
+            newFile = File(fileName)
+            
+            filePath = newFile.getServerDir() +  newFile.getName()    
+            
+            with open(filePath, 'wb') as f:
+                print ('File opened')                
+                while True:
+                    print('receiving data...')
+                    data = self.sock.recv(self.CHUNK_SIZE)
+                    msg = repr(data)
+
+                    if msg.find("$endFile") != -1:
+                        data = data[:-8]
+                        f.write(data)
+                        break
+                    if (not data):
+                        break
+                    f.write(data)
+            print("Got File")
+            f.close()
+            self.filesVector.append(newFile)
+            return newFile
+        else:
+            return None
 
     def sendMsg(self):
+        
         while True:
             try:
-                self.sock.send(bytes(input(""), 'utf-8'))
+                if self.sendMessageFlag:
+                    print("DEBUG:SENDING MSG")
+                    self.currentMsg = input("")
+                    self.sock.send(bytes(self.currentMsg, 'utf-8'))
+                elif self.sendFileFlag:
+                    print("DEBUG:SENDING FILE")
+                    self.sendFileS()
+
             except (KeyboardInterrupt, SystemExit):
                 stdout.flush()
                 print ('\nConnection to server closed.')   #Close server
@@ -31,11 +107,16 @@ class Client:
         while True:
             try:
                 data = self.sock.recv(self.SIZEMESSAGE)
+                condData = data.decode('utf-8')
 
                 if not data:
                     break
                 elif data[0] == ord(self.charStartFileTrans):
                     self.receiveFileFServer()
+                elif (condData == "$nameFile"):
+                    print("Sending Files...")
+                    self.sendMessageFlag = False
+                    self.sendFileFlag = True
                 else:
                     message = data.decode('utf-8')#, 'utf-8')
                     print(message)
@@ -44,30 +125,16 @@ class Client:
                 print ('\nConnection to server closed.')   #Close server
                 break
 
-
-
     def testFileExists(self, fileName):
-        if os.path.isfile(fileName):
+        if os.path.isfile("LocalFiles/"+fileName):
             return True
         else:
             print("File doesn't exist...\n")
-            return False       
+            return False   
 
-    def senfFile2Server(self):
+    def sendFile2Server(self):
         fileName = ""
-        #while True:
-        #    fileName = input("Write the name of the file: ")
-        #    if testFileExists(fileName):
-        #        break
-        #    else:
-        #        yesNo = input("File doesn't exist, try again? (Y/n)")
-        #        condNo = (yesNo == "N") or (yesNo == "n") 
-        #        condYes = (yesNo == "Y") or (yesNo == "y")
-        #        if condYes:
-        #            continue
-        #        elif condNo:
-        #            return False
-        #SEND ROUTINE        
+       
         fileName = "TD_work.pdf"
         path = self.createLocalDir()
         filePath = path + "/" + fileName
@@ -79,17 +146,10 @@ class Client:
         with open(filePath, 'rb') as f:
             c.sendfile(f, 0)
         f.close()
-        endString = "@endfile"
+        endString = "$endFile"
         endFile = endString.encode('utf-8').strip()
         c.send(endFile)
         print('Done sending')
-
-    def createLocalDir(self):
-        dir = ""
-        dir = os.path.join(dir, 'LocalFiles')
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        return dir
 
     def receiveFileFServer(self):
         
@@ -105,7 +165,7 @@ class Client:
                 data = self.sock.recv(self.CHUNK_SIZE)
                 msg = repr(data)
 
-                if msg.find("@endfile") != -1:
+                if msg.find("$endFile") != -1:
                     data = data[:-8]
                     f.write(data)
                     #print("Out we go")
@@ -118,11 +178,13 @@ class Client:
 
         print("Got File")
         f.close()
-            
 
-    
-
-
+    def createLocalDir(self):
+        dir = ""
+        dir = os.path.join(dir, 'LocalFiles')
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        return dir
 
 
     def __init__(self, address):
@@ -146,9 +208,6 @@ class Client:
                 stdout.flush()
                 print ('\nConnection to server closed.')   #Close server
                 break
-
-
-       
 
 
 if __name__ == "__main__":

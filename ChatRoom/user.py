@@ -9,6 +9,7 @@ class User:
         self.username = ""
         self.passWord = ""
         self.actualConnection = []
+        self.actualPort = []
         self.hasConn = False
 
 
@@ -22,9 +23,10 @@ class User:
     def getPass(self):
         return self.passWord
     
-    def setConnection(self, c):
+    def setConnection(self, c, a):
         self.hasConn = True
-        self.actualConnection = c  
+        self.actualConnection = c
+        self.actualPort = a
 
     def hasConnection(self):
         return self.hasConn
@@ -32,9 +34,14 @@ class User:
     def getConnection(self):
         return self.actualConnection
     
+    def getPort(self):
+        return self.actualPort
+    
     def remConnection(self):
         self.hasConn = False
         self.actualConnection = None
+        self.actualPort = None
+
     
 
     

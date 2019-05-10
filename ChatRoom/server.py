@@ -9,9 +9,12 @@ from threading import Event
 
 from room import *
 from user import *
+from file import *
 
 class Server:
-    SIZEMESSAGE = 4096
+    
+    CHUNK_SIZE = 1024*8
+    SIZEMESSAGE = 1024*4
     PORT = 10000
     ADDRESS = '0.0.0.0' 
         #   make server available to any IP address that is 
@@ -21,7 +24,8 @@ class Server:
         #   format: object room
     userVector = [] 
         #   format: object user
-        #   data(either command or message)
+    filesVector = []
+        #   format: object file
 
     userMenuCommand = {64:"@",
                         37:"%"}
@@ -139,6 +143,7 @@ class Server:
                 pass
 
             isMenuFirst = False
+        self.disconnect(c,a, iUser)
 
     def chatRoom(self,c,a, iUser, isMenuFirst):
         close = False
@@ -151,8 +156,9 @@ class Server:
             if rum.hasUser(iUser):
                 self.roomGUI(c,a,rum)
         while not goMenu:
+
             (close, bytedata) = self.userListener(c, a, iUser, isMenuFirst)
-            
+
             if bytedata is not None:
                 goMenu = self.callMenu(c,a,bytedata)
                 seeUsers = self.callSeeUsers(c,a,bytedata)
@@ -166,8 +172,8 @@ class Server:
                     break
                 if sendFiles:
                     rum = self.findRoomFromUser(iUser)
-                    self.sendFilesToRoom(rum, iUser)
-                    
+                    #TESTING#self.sendFilesToRoom(rum, iUser)
+                    self.fileTransf(iUser,rum)
 
                 data = str(bytedata, "utf-8")
 
@@ -283,7 +289,7 @@ class Server:
                     (success,userObj) = self.confirmLogin(c,a, newUser)
                     if success:
                         #newUser = userObj
-                        newUser.setConnection(c)
+                        newUser.setConnection(c,a)
                         newUser.setName(userObj.getName())
                         newUser.setPass(userObj.getPass())
                         self.userVector.append(newUser)
@@ -315,7 +321,7 @@ class Server:
                                 #self.createUsr(c, a, iUser) 
                                 return (False, None)
                             else:
-                                u.setConnection(c)
+                                u.setConnection(c,a)
                                 print("User " + u.getName() + " Logged In")
                                 self.sendToUser(c," Logged In, You Welcome ")  
                                 Event().wait(1.5)           
@@ -687,10 +693,7 @@ class Server:
             else:
                 print(str(rum.getName())+" Room Empty\n\n")
         return False
-
-
 ####MSG FUNCT
-
     def sendToRoom(self, msg, room, iUser):
         #for rum in self.roomVector:
         #    self.showUsrInRoom(rum)
@@ -757,19 +760,112 @@ class Server:
                 data = bytes(data, 'utf-8')
             return (close, data)
 
-
 ###FILES FUNCT
+    def fileTransf(self, iUser, room):
+        file2Send = self.receiveFile(iUser)
 
-    def fileExists(self, name):
-        pass
-    
-    def setFileName(self):
-        pass
+        if ((room is not None) and (file2Send is not None)):
+            users = room.getUsers()
+            for u in users:
+                if str(u.getName()) != str(iUser.getName()):
+                    connection = u.getConnection()
+                    if connection is not None:
+                        try:
+                            pass
+                            #self.sendFile(iUser, file2Send)
+                        except(ConnectionResetError):
+                            #   Checks if connection was closed by peer
+                            pass
+                        except(Exception):
+                            pass
+        else:
+            pass
 
+    def receiveFile(self, iUser):
+        c = iUser.getConnection()
+        a = iUser.getPort()
+
+        self.sendToUser(c, "$nameFile")
+        self.sendToUser(c," Write FileName.extension:")
+        (close, fileName) = self.receiveStrMessage(c, a)
+        
+        print("FileName got: " + "["+fileName+"]")
+
+        if (fileName != "$cancel"):
+            newFile = File(fileName)
+
+            filePath = newFile.getServerDir() +  newFile.getName()    
+            #(close, startFile) = self.receiveStrMessage(c, a)
+            with open(filePath, 'wb') as f:
+                print ('File opened')                
+                while True:
+                    print('receiving data...')
+                    data = c.recv(self.CHUNK_SIZE)
+                    msg = repr(data)
+
+                    if msg.find("$endFile") != -1:
+                        print("DEBUG: $endFile")
+                        data = data[:-8]
+                        f.write(data)
+                        break
+                    if (not data):
+                        break
+                    f.write(data)
+            print("Got File")
+            f.close()
+            self.filesVector.append(newFile)
+            return newFile
+        else:
+            print("DEBUG: $cancel")
+            return None
+        
+    def sendFile(self, iUser, file2Send):
+        c = iUser.getConnection()
+        a = iUser.getPort()
+
+        fileName=file2Send.getName() 
+            #In the same folder or path
+            #is this file running must 
+            # the file you want to transfer to be
+        if self.testFileExists(fileName):
+            path = file2Send.getServerDir()
+            filePath = path + fileName
+
+            startFileTrans = bytes(self.charStartFileTrans,'utf-8')
+            c.send(startFileTrans)
+                #1 - Sends ! to start file transfer
+            print(" Server: Sending Files")
+            c.send(bytes(fileName,'utf-8'))
+                #2 - Sends FileName
+            startString = "$startFile"
+            startFile = startString.encode('utf-8').strip()
+            c.send(startFile)
+                #3 - Sends $startFile
+            with open(filePath, 'rb') as f:
+                c.sendfile(f, 0)
+            f.close()
+                #4 - Sends File
+            endString = "$endFile"
+            endFile = endString.encode('utf-8').strip()
+            c.send(endFile)
+                #5 - Sends EndFile
+            print('Done sending')
+        else:
+            cancelString = "$cancel"
+            cancelFile = cancelString.encode('utf-8').strip()
+            c.send(cancelFile)
+
+
+    def testFileExists(self, fileName):
+        if os.path.isfile("ServerFiles/"+fileName):
+            return True
+        else:
+            print("File doesn't exist...\n")
+            return False     
 
     def sendGenFiles2Client(self, c):
             fileName='TD_work.pdf' #In the same folder or path is this file running must the file you want to tranfser to be
-            
+
             path = self.createServerDir()
             filePath = path + "/" + fileName
 
@@ -780,11 +876,37 @@ class Server:
             with open(filePath, 'rb') as f:
                 c.sendfile(f, 0)
             f.close()
-            endString = "@endfile"
+            endString = "$endFile"
             endFile = endString.encode('utf-8').strip()
             c.send(endFile)
             print('Done sending')
 
+    def receiveGenFileFClient(self,c,a):
+
+            fileName='TD_work2.pdf' #In the same folder or path is this file running must the file you want to tranfser to be
+            path = self.createServerDir()
+            filePath = path + "/" + fileName
+            
+            with open(filePath, 'wb') as f:
+                print ('File opened')                
+                while True:
+                    print('receiving data...')
+                    data = c.recv(self.CHUNK_SIZE)
+                    msg = repr(data)
+
+                    if msg.find("$endFile") != -1:
+                        data = data[:-8]
+                        f.write(data)
+                        #print("Out we go")
+                        break
+                    if (not data):
+                        #print("Out we go")
+                        break
+                    
+                    f.write(data)
+
+            print("Got File")
+            f.close()
 
     def sendFilesToRoom(self,room,iUser):
         if room is not None:
@@ -816,7 +938,7 @@ class Server:
         with open(filePath, 'rb') as f:
             c.sendfile(f, 0)
         f.close()
-        endString = "@endfile"
+        endString = "$endFile"
         endFile = endString.encode('utf-8').strip()
         c.send(endFile)
         print('Done sending')
@@ -834,7 +956,7 @@ class Server:
                 data = c.recv(self.CHUNK_SIZE)
                 msg = repr(data)
 
-                if msg.find("@endfile") != -1:
+                if msg.find("$endFile") != -1:
                     data = data[:-8]
                     f.write(data)
                     #print("Out we go")
