@@ -1,0 +1,742 @@
+INFO:root:Trying to connect ...
+INFO:root:Server running ....
+INFO:root:127.0.0.1: 34324 connected
+INFO:root:User List ------- Pass List
+
+INFO:root:127.0.0.1: 34330 connected
+INFO:root:User List ------- Pass List
+
+INFO:root: There are no Users
+INFO:root: There are no Users
+INFO:root: There are Users
+INFO:root:User lucas Logged In
+INFO:root: New User logged in: lucas
+
+DEBUG:root:CREATE
+
+INFO:root: There are no rooms
+INFO:root:LIST OF ROOMS
+
+INFO:root:ROOM NAME: lala
+
+INFO:root:	User: lucas
+
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root:User skira Logged In
+INFO:root: New User logged in: skira
+
+DEBUG:root:ENTER
+
+DEBUG:root:False  lala
+INFO:root:LIST OF ROOMS
+
+INFO:root:ROOM NAME: lala
+
+INFO:root:	User: lucas
+
+INFO:root:	User: skira
+
+DEBUG:root:COND SEND FILES
+
+INFO:root:FileName got: [TD_work.pdf]
+INFO:root:File opened
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+DEBUG:root:$endFile
+INFO:root:Got File
+INFO:root:Sending b'!'
+
+INFO:root: Server: Sending Files
+INFO:root: Server: Sending FileName [TD_work.pdf]
+INFO:root:User Disconnected
+INFO:root:Server shutting down...
+INFO:root:Trying to connect ...
+INFO:root:Server running ....
+DEBUG:root:There is already LocalFiles dir
+INFO:root:You are connected ...
+INFO:root:127.0.0.1: 34458 connected
+DEBUG:root:SENDING MSG
+INFO:root:User List ------- Pass List
+
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Welcome to the ChatRoom App...
+
+
+ Please write your new Username: 
+INFO:root: There are no Users
+DEBUG:root:SENDING MSG
+INFO:root: Please choose a new Password: 
+DEBUG:root:SENDING MSG
+INFO:root: Please REPEAT your Password: 
+INFO:root: There are no Users
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ New User Added...Going to Login
+
+
+
+
+ LOGIN
+ Please write your Username: 
+INFO:root: Please write your Password: 
+DEBUG:root:SENDING MSG
+INFO:root: There are Users
+INFO:root:User lucas Logged In
+DEBUG:root:SENDING MSG
+INFO:root: Logged In, You Welcome 
+INFO:root: New User logged in: lucas
+
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFO:root:       WELCOME TO CHATROOM APP
+                        MENU 
+  
+                1 : CREATE ROOM 
+
+                2 : DELETE ROOM 
+
+                3 : ENTER ROOM 
+
+                4 : MENU 
+
+                5 : EXIT :( 
+                
+        >> Press any number you want to enter Menu Options
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       WELCOME TO CHATROOM APP
+                        MENU 
+  
+                1 : CREATE ROOM 
+
+                2 : DELETE ROOM 
+
+                3 : ENTER ROOM 
+
+                4 : MENU 
+
+                5 : EXIT :( 
+                
+        >> Press any number you want to enter Menu Options
+	Write a number from 1 to 6
+DEBUG:root:There is already LocalFiles dir
+INFO:root:You are connected ...
+INFO:root:127.0.0.1: 34462 connected
+INFO:root:User List ------- Pass List
+
+INFO:root:lucas	: 1
+
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Welcome to the ChatRoom App...
+
+
+ Please write your new Username: 
+INFO:root: There are Users
+DEBUG:root:SENDING MSG
+INFO:root: Please choose a new Password: 
+DEBUG:root:SENDING MSG
+INFO:root: Please REPEAT your Password: 
+INFO:root: There are Users
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ New User Added...Going to Login
+
+
+
+
+ LOGIN
+ Please write your Username: 
+DEBUG:root:SENDING MSG
+INFO:root: Please write your Password: 
+INFO:root: There are Users
+DEBUG:root:SENDING MSG
+INFO:root:User skira Logged In
+INFO:root: Logged In, You Welcome 
+INFO:root: New User logged in: skira
+
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFO:root:       WELCOME TO CHATROOM APP
+                        MENU 
+  
+                1 : CREATE ROOM 
+
+                2 : DELETE ROOM 
+
+                3 : ENTER ROOM 
+
+                4 : MENU 
+
+                5 : EXIT :( 
+                
+        >> Press any number you want to enter Menu Options
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       WELCOME TO CHATROOM APP
+                        MENU 
+  
+                1 : CREATE ROOM 
+
+                2 : DELETE ROOM 
+
+                3 : ENTER ROOM 
+
+                4 : MENU 
+
+                5 : EXIT :( 
+                
+        >> Press any number you want to enter Menu Options
+	Write a number from 1 to 6
+DEBUG:root:CREATE
+
+DEBUG:root:SENDING MSG
+INFO:root: Please write the name of the Room: 
+INFO:root: There are no rooms
+DEBUG:root:SENDING MSG
+INFO:root:Do you want a password? (Y/n)
+INFO:root:LIST OF ROOMS
+
+INFO:root:ROOM NAME: lala
+
+INFO:root:	User: lucas
+
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFO:root: New Room Added... Entering
+
+
+
+
+ Entered the Room, Have a nice chat :P ::: lucas Entered the Room
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFO:root:       WELCOME TO lala ROOM
+            @ : MENU 
+  
+            >> Press @ to go back to Menu
+            >> Press % to see Users in this Room
+            >> Press ! to send Files
+>> 
+DEBUG:root:SENDING MSG
+DEBUG:root:ENTER
+
+INFO:root: Rooms Available: 
+
+INFO:root:  lala Users: 1
+
+ Entering Room 
+ Please write the Room name: 
+DEBUG:root:False  lala
+INFO:root:LIST OF ROOMS
+
+INFO:root:ROOM NAME: lala
+
+INFO:root:	User: lucas
+
+INFO:root:	User: skira
+
+DEBUG:root:SENDING MSG
+INFO:root:::: skira Entered the Room
+INFO:root: Entered the Room, Have a nice chat :P 
+INFO:root:::: skira Entered the Room
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFO:root:       WELCOME TO lala ROOM
+            @ : MENU 
+  
+            >> Press @ to go back to Menu
+            >> Press % to see Users in this Room
+            >> Press ! to send Files
+>> 
+DEBUG:root:COND SEND FILES
+
+DEBUG:root:SENDING MSG
+INFO:root:Sending Files...
+INFO:root:Write FileName.extension:
+INFO:root:FileName got: [TD_work.pdf]
+INFO:root:File opened
+INFO:root:receiving data...
+DEBUG:root:SENDING FILE
+INFO:root:Local: Sending Files
+INFO:root:<class 'str'>
+INFO:root:Done sending
+DEBUG:root:SENDING MSG
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+DEBUG:root:$endFile
+INFO:root:Got File
+INFO:root:Sending b'!'
+
+INFO:root: Server: Sending Files
+INFO:root: Server: Sending FileName [TD_work.pdf]
+DEBUG:root:Receiving Files
+INFO:root: lucas: ! 
+>> 
+INFO:root:Server shutting down...
+INFO:root:Connection to server closed.

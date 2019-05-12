@@ -64,7 +64,7 @@ class Client:
         try:
             fileName = data.decode('utf-8')
         except Exception:
-            fileName = "None.none"
+            fileName = data.decode('utf-8')
         newFile = File(fileName)
         
         filePath = newFile.getLocalDir() +  newFile.getName()    
@@ -118,7 +118,6 @@ class Client:
                     condData = data.decode('utf-8')
                 except Exception:
                     condData = None
-
                 if not data:
                     break
                 elif data[0] == ord(self.charStartFileTrans):
