@@ -866,19 +866,17 @@ class Server:
             path = file2Send.getServerDir()
             filePath = path + fileName
 
+            print("FILEPATH: " + filePath)
+
             startFileTrans = bytes(self.charStartFileTrans + fileName,'utf-8')
             c.send(startFileTrans)
 
-            #logging.info("Sending " + str(startFileTrans)+"\n")
+            logging.info("Sending " + str(startFileTrans)+"\n")
             print("Sending " + str(startFileTrans)+"\n")
-                #1 - Sends ! to start file transfer
+                #1 - Sends !Filename to start file transfer
             #logging.info(" Server: Sending Files")
             print(" Server: Sending Files")
-            #self.sendToUser(c, fileName+"!")
-            
-            #sendName = fileName.strip()
-            #c.send(bytes(sendName,'utf-8'))
-            #logging.info(" Server: Sending FileName "+"[" + fileName + "]")
+            logging.info(" Server: Sending FileName "+"[" + fileName + "]")
             print(" Server: Sending FileName "+"[" + fileName + "]")
                 #2 - Sends FileName
             with open(filePath, 'rb') as f:
@@ -886,10 +884,7 @@ class Server:
             f.close()
                 #3 - Sends File
             endString = "$endFile"
-            #endFile = endString.encode('utf-8').strip()
-            endFile = bytes(endString,'utf-8')
-            self.sendToUser(c, endFile)
-            #c.send(endFile)
+            self.sendToUser(c, endString)
                 #4 - Sends EndFile
             logging.info('Done sending')
             print('Done sending')
@@ -1023,18 +1018,20 @@ if __name__ == "__main__":
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
     logging.info("Trying to connect ...")
     print("Trying to connect ...")
-    try:
-        server = Server()
-        server.run()
-    except KeyboardInterrupt:
-        logging.info("Server shutting down...")
-        print("Server shutting down...")
-        stdout.flush()
-        open("user_pass.txt", 'w').close()
-        sys.exit(0);
-    except:
-        logging.info("Couldn't start the server ...")
-        print("Couldn't start the server ...")
-        pass
+    while(True):
+        try:
+            server = Server()
+            server.run()
+        except KeyboardInterrupt:
+            logging.info("Server shutting down...")
+            print("Server shutting down...")
+            stdout.flush()
+            open("user_pass.txt", 'w').close()
+            sys.exit(0);
+            break
+        except:
+            logging.info("Couldn't start the server ...")
+            print("Couldn't start the server ...")
+            pass
 
 

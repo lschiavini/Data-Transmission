@@ -77,7 +77,7 @@ class Client:
         
         fileName = self.recvMsg[1:]#str(data)
         fileName = fileName.decode('utf-8')
-        print("FILENAME: " + "[" + fileName + "]")
+        print("FILENAME: " + "["+fileName+ "]")
         
 
         newFile = File(fileName)
