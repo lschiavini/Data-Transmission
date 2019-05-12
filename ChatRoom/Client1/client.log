@@ -1,0 +1,682 @@
+DEBUG:root:There is already LocalFiles dir
+INFO:root:You are connected ...
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Welcome to the ChatRoom App...
+
+
+ Please write your new Username: 
+DEBUG:root:SENDING MSG
+INFO:root: Please choose a new Password: 
+DEBUG:root:SENDING MSG
+INFO:root: Please REPEAT your Password: 
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ New User Added...Going to Login
+
+
+
+
+ LOGIN
+ Please write your Username: 
+INFO:root: Please write your Password: 
+DEBUG:root:SENDING MSG
+DEBUG:root:SENDING MSG
+INFO:root: Logged In, You Welcome 
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       WELCOME TO CHATROOM APP
+                        MENU 
+  
+                1 : CREATE ROOM 
+
+                2 : DELETE ROOM 
+
+                3 : ENTER ROOM 
+
+                4 : MENU 
+
+                5 : EXIT :( 
+                
+        >> Press any number you want to enter Menu Options
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       WELCOME TO CHATROOM APP
+                        MENU 
+  
+                1 : CREATE ROOM 
+
+                2 : DELETE ROOM 
+
+                3 : ENTER ROOM 
+
+                4 : MENU 
+
+                5 : EXIT :( 
+                
+        >> Press any number you want to enter Menu Options
+	Write a number from 1 to 6
+DEBUG:root:SENDING MSG
+INFO:root: Please write the name of the Room: 
+DEBUG:root:SENDING MSG
+INFO:root:Do you want a password? (Y/n)
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFO:root: New Room Added... Entering
+
+
+
+
+ Entered the Room, Have a nice chat :P ::: lucas Entered the Room
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       WELCOME TO lala ROOM
+            @ : MENU 
+  
+            >> Press @ to go back to Menu
+            >> Press % to see Users in this Room
+            >> Press ! to send Files
+>> 
+INFO:root:::: skira Entered the Room
+INFO:root:$cancel ...File Sent... skira: !
+DEBUG:root:SENDING MSG
+INFO:root:Sending Files...
+INFO:root:
+INFO:root: Write FileName.extension:
+DEBUG:root:SENDING FILE
+INFO:root:Local: Sending Files
+INFO:root:<class 'str'>
+INFO:root:Done sending
+INFO:root: lucas: ! 
+>> 
+DEBUG:root:SENDING MSG
+DEBUG:root:Receiving Files
+INFO:root:File opened
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:Got File
+INFO:root: skira: 
+INFO:root:Connection to server closed.
+DEBUG:root:There is already LocalFiles dir
+INFO:root:You are connected ...
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Welcome to the ChatRoom App...
+
+
+ Please write your new Username: 
+DEBUG:root:SENDING MSG
+INFO:root: Please choose a new Password: 
+DEBUG:root:SENDING MSG
+INFO:root: Please REPEAT your Password: 
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ New User Added...Going to Login
+
+
+
+
+ LOGIN
+ Please write your Username: 
+DEBUG:root:SENDING MSG
+INFO:root: Please write your Password: 
+DEBUG:root:SENDING MSG
+INFO:root: Logged In, You Welcome 
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFO:root:       WELCOME TO CHATROOM APP
+                        MENU 
+  
+                1 : CREATE ROOM 
+
+                2 : DELETE ROOM 
+
+                3 : ENTER ROOM 
+
+                4 : MENU 
+
+                5 : EXIT :( 
+                
+        >> Press any number you want to enter Menu Options
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       WELCOME TO CHATROOM APP
+                        MENU 
+  
+                1 : CREATE ROOM 
+
+                2 : DELETE ROOM 
+
+                3 : ENTER ROOM 
+
+                4 : MENU 
+
+                5 : EXIT :( 
+                
+        >> Press any number you want to enter Menu Options
+	Write a number from 1 to 6
+DEBUG:root:SENDING MSG
+INFO:root: Please write the name of the Room: 
+INFO:root:Do you want a password? (Y/n)
+DEBUG:root:SENDING MSG
+DEBUG:root:SENDING MSG
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFO:root: New Room Added... Entering
+
+
+
+
+ Entered the Room, Have a nice chat :P ::: lucas Entered the Room
+INFO:root:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFO:root:       WELCOME TO lala ROOM
+            @ : MENU 
+  
+            >> Press @ to go back to Menu
+            >> Press % to see Users in this Room
+            >> Press ! to send Files
+>> 
+INFO:root:::: skira Entered the Room
+DEBUG:root:Receiving Files
+INFO:root:File opened
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:Got File

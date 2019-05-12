@@ -5,11 +5,16 @@ from sys import argv, stdout, exit
 import random                                                      
 import os
 from threading import Event
-
+import logging
 
 from room import *
 from user import *
 from file import *
+
+logging.basicConfig(filename='server.log',level=logging.DEBUG)
+#logging.debug('This message should go to the log file')
+#logging.info('So should this')
+#logging.warning('And this, too')
 
 class Server:
     
@@ -75,6 +80,7 @@ class Server:
         close = False
         isMenuFirst = True
         try:
+            logging.info(" New User logged in: " + iUser.getName() + "\n")
             print(" New User logged in: " + iUser.getName() + "\n")
         except(Exception):
             pass
@@ -112,22 +118,28 @@ class Server:
                     (close, command) = self.userListener(c, a, iUser, isMenuFirst)
                     
                     command = str(command, "utf-8")
+                    logging.debug("COMMAND: " + command + "\n")
                     print("COMMAND: " + command + "\n")
                 except:
                     pass   
             if command == "1":
+                logging.debug("CREATE\n")
                 print("CREATE\n")
                 (close, chatRoomEnable) = self.createRoom( c, a, iUser)
             elif command == "2":
+                logging.debug("DELETE\n")
                 print("DELETE\n")
                 self.deleteRoom( c, a)
             elif command == "3":
+                logging.debug("ENTER\n")
                 print("ENTER\n")
                 chatRoomEnable = self.confirmEnter( c, a, iUser)
             elif command == "4":
+                logging.debug("MENU\n")
                 print("MENU\n")
                 self.printMenu( c, a)
             elif command == "5":
+                logging.debug("EXIT\n")
                 print("EXIT\n")
                 userExit = True
             elif command == "10":
@@ -211,6 +223,7 @@ class Server:
             comData = data[0]
             condMenu = (comData == ord(self.userMenuCommand.get(64)))       
             if (condMenu):
+                logging.debug("COND MENU\n")
                 print("COND MENU")
                 return True
         except (Exception):
@@ -222,6 +235,7 @@ class Server:
             comData = data[0]
             condSeeWho = (comData == ord(self.userMenuCommand.get(37)))       
             if (condSeeWho):
+                logging.debug("COND SEE USERS\n")
                 print("COND SEE USERS")
                 return True
         except (Exception):
@@ -233,6 +247,7 @@ class Server:
             comData = data[0]
             condSendFiles = (comData == ord(self.charStartFileTrans))      
             if (condSendFiles):
+                logging.debug("COND SEND FILES\n")
                 print("COND SEND FILES")
                 return True
         except (Exception):
@@ -322,6 +337,7 @@ class Server:
                                 return (False, None)
                             else:
                                 u.setConnection(c,a)
+                                logging.info("User " + u.getName() + " Logged In")
                                 print("User " + u.getName() + " Logged In")
                                 self.sendToUser(c," Logged In, You Welcome ")  
                                 Event().wait(1.5)           
@@ -343,8 +359,10 @@ class Server:
                     self.createUsr(c,a, iUser)
                 
     def printAllUsr(self):
+        logging.info("User List ------- Pass List\n")
         print("User List ------- Pass List\n")
         for u in self.userVector:
+            logging.info(u.getName()+ "\t: " +u.getPass()+ "\n")
             print(u.getName()+ "\t: " +u.getPass()+ "\n")
 
     def testUsrPass(self, userName, passW = None):
@@ -354,8 +372,8 @@ class Server:
         
 
         if (len(self.userVector) > 0):
-
-            print("There are Users")
+            logging.info(" There are Users")
+            print(" There are Users")
 
             if (passW == None):
                 #Tests if user isn't already being used
@@ -371,6 +389,7 @@ class Server:
                             return (True, usr)        
                 return (False,newUser)    #User doesnt match
         else:
+            logging.info(" There are no Users")
             print(" There are no Users")
             return (True, newUser)
 
@@ -461,6 +480,7 @@ class Server:
         #Tests room/password
         #If it passes the test returns True, else False
         if (len(self.roomVector) > 0):
+            logging.info("There are rooms")
             print("There are rooms")
             if (passW == None):
                 #Tests if room isn't already being used
@@ -473,10 +493,12 @@ class Server:
                     if (rum.getName() == roomName):
                         if(rum.getPass() == passW):
                             return (True, rum)
+                logging.info("Pass doesnt match")            
                 print("Pass doesnt match")
                 return (False, noneRoom) #Pass doesnt match
                 
         else:
+            logging.info(" There are no rooms")
             print(" There are no rooms")
             return (True, noneRoom)
 
@@ -500,7 +522,7 @@ class Server:
         for n in range(len(self.roomVector)):
             if (self.roomVector[n].getName() == roomName):
                 self.roomVector[n].addUser(user)
-
+                logging.info("LIST OF ROOMS" + "\n")
                 print("LIST OF ROOMS" + "\n")
                 for rum in self.roomVector:
                     self.showUsrInRoom(rum)
@@ -536,7 +558,7 @@ class Server:
                 condHasPass = roomObj.getIsVip()
             else:
                 pass
-            
+            logging.debug(str(condHasPass) + "  " + roomObj.getName())
             print(str(condHasPass) + "  " + roomObj.getName())
             
             if condHasPass: 
@@ -568,7 +590,7 @@ class Server:
                         #user.setRoom(rum)
 
                         self.roomVector[n].addUser( user)
-                                                
+                        logging.info("LIST OF ROOMS" + "\n")                      
                         print("LIST OF ROOMS" + "\n")
                         for rum in self.roomVector:
                             self.showUsrInRoom(rum)
@@ -591,6 +613,7 @@ class Server:
     def exitRoom(self, c, a, iUser):
         room = self.findRoomFromUser(iUser)
         room.removeUser(iUser)
+        logging.info("USER REMOVED FROM ROOM")
         print("USER REMOVED FROM ROOM")
                 
     def deleteRoom(self,c,a):
@@ -614,6 +637,7 @@ class Server:
 
                         if condName:
                             if condPassW:
+                                logging.info(" \n\n Room " +roomObj.getName() +" Removed ")
                                 print(" \n\n Room " +roomObj.getName() +" Removed ")
                                 self.sendToUser(c," \n\n Room " +roomObj.getName() +" Removed ")
                                 self.roomVector.remove(self.roomVector[n])
@@ -650,12 +674,14 @@ class Server:
                     self.sendToUser(c,"\tUser: " + u.getName() +"\n")
 
     def showUsrInRoom(self, room):
+        logging.info("ROOM NAME: " + room.getName()+"\n")
         print("ROOM NAME: " + room.getName()+"\n")
         for rum in self.roomVector:
             if rum.getName() == room.getName():
                 users = rum.getUsers()
                 if (users is not None):
                     for u in users:
+                        logging.info("\tUser: " + u.getName() +"\n")
                         print("\tUser: " + u.getName() +"\n")
                         
     def showAllRooms(self,c,a):
@@ -691,6 +717,7 @@ class Server:
                         self.sendToRoom(msg, rum, iUser)
                         return True
             else:
+                logging.info(str(rum.getName())+" Room Empty\n\n")
                 print(str(rum.getName())+" Room Empty\n\n")
         return False
 ####MSG FUNCT
@@ -753,6 +780,7 @@ class Server:
                 iUser = self.findUsr(c)
                 if(iUser != False):
                     self.disconnect(c, a, iUser)
+                logging.info("User Disconnected")
                 print("User Disconnected")
                 close = True
             else:
@@ -772,7 +800,11 @@ class Server:
                     if connection is not None:
                         try:
                             pass
-                            self.sendFile(iUser, file2Send)
+                            #self.sendFile(iUser, file2Send)
+                            #TODO, change to 
+                            self.sendFile(u, file2Send)
+                            #When done testing single file Client
+                            
                         except(ConnectionResetError):
                             #   Checks if connection was closed by peer
                             pass
@@ -789,24 +821,30 @@ class Server:
         self.sendToUser(c," Write FileName.extension:")
         (close, fileName) = self.receiveStrMessage(c, a)
         
+        logging.info("FileName got: " + "["+fileName+"]")
         print("FileName got: " + "["+fileName+"]")
 
         newFile = File(fileName)
         filePath = newFile.getServerDir() +  newFile.getName()    
         with open(filePath, 'wb') as f:
+            logging.info('File opened')
             print ('File opened')                
             while True:
+                logging.info('receiving data...')
                 print('receiving data...')
                 data = c.recv(self.CHUNK_SIZE)
                 msg = repr(data)
 
                 if msg.find("$endFile") != -1:
+                    logging.debug('$endFile')
                     print("DEBUG: $endFile")
                     data = data[:-8]
                     f.write(data)
+                    logging.info("Got File")
                     print("Got File")
                     break
                 if msg.find("$cancel") != -1:
+                    logging.debug('Cancel')
                     print("Cancel")
                     os.remove(filePath)
                     newFile.setName("None.none")
@@ -828,79 +866,47 @@ class Server:
             path = file2Send.getServerDir()
             filePath = path + fileName
 
-            startFileTrans = bytes(self.charStartFileTrans,'utf-8')
+            print("FILEPATH: " + filePath)
+
+            startFileTrans = bytes(self.charStartFileTrans + fileName,'utf-8')
             c.send(startFileTrans)
-                #1 - Sends ! to start file transfer
+
+            logging.info("Sending " + str(startFileTrans)+"\n")
+            print("Sending " + str(startFileTrans)+"\n")
+                #1 - Sends !Filename to start file transfer
+            #logging.info(" Server: Sending Files")
             print(" Server: Sending Files")
-            c.send(bytes(fileName,'utf-8'))
+            logging.info(" Server: Sending FileName "+"[" + fileName + "]")
+            print(" Server: Sending FileName "+"[" + fileName + "]")
                 #2 - Sends FileName
             with open(filePath, 'rb') as f:
                 c.sendfile(f, 0)
             f.close()
                 #3 - Sends File
             endString = "$endFile"
-            endFile = endString.encode('utf-8').strip()
-            c.send(endFile)
+            self.sendToUser(c, endString)
                 #4 - Sends EndFile
+            logging.info('Done sending')
             print('Done sending')
         else:
-            print("DEBUG: $cancel File Sending")
+
+            logging.debug('$cancel File Sending')
+            #print("DEBUG: $cancel File Sending")
             cancelString = "$cancel"
             cancelFile = cancelString.encode('utf-8').strip()
             c.send(cancelFile)
+
+        self.sendToUser(c," ...File Sent...")
+        
 
 
     def testFileExists(self, fileName):
         if os.path.isfile("ServerFiles/"+fileName):
             return True
         else:
+            logging.info("File doesn't exist...\n")
             print("File doesn't exist...\n")
             return False     
-
-    def sendGenFiles2Client(self, c):
-            fileName='TD_work.pdf' #In the same folder or path is this file running must the file you want to tranfser to be
-
-            path = self.createServerDir()
-            filePath = path + "/" + fileName
-
-            startFileTrans = bytes(self.charStartFileTrans,'utf-8')
-            c.send(startFileTrans)
-            print("Sending Files")
-
-            with open(filePath, 'rb') as f:
-                c.sendfile(f, 0)
-            f.close()
-            endString = "$endFile"
-            endFile = endString.encode('utf-8').strip()
-            c.send(endFile)
-            print('Done sending')
-
-    def receiveGenFileFClient(self,c,a):
-
-            fileName='TD_work2.pdf' #In the same folder or path is this file running must the file you want to tranfser to be
-            path = self.createServerDir()
-            filePath = path + "/" + fileName
-            
-            with open(filePath, 'wb') as f:
-                print ('File opened')                
-                while True:
-                    print('receiving data...')
-                    data = c.recv(self.CHUNK_SIZE)
-                    msg = repr(data)
-
-                    if msg.find("$endFile") != -1:
-                        data = data[:-8]
-                        f.write(data)
-                        #print("Out we go")
-                        break
-                    if (not data):
-                        #print("Out we go")
-                        break
-                    
-                    f.write(data)
-
-            print("Got File")
-            f.close()
 
     def sendFilesToRoom(self,room,iUser):
         if room is not None:
@@ -974,6 +980,7 @@ class Server:
         return dir
 
     def disconnect(self, c, a,  iUser):
+        logging.info(str(a[0]) + ": " + str(a[1]) + " disconnected")
         print(str(a[0]) + ": " + str(a[1]) + " disconnected")
         iUser.remConnection()
         self.connections.remove(c)
@@ -988,6 +995,7 @@ class Server:
     
         self.sock.bind((self.ADDRESS, self.PORT))
         self.sock.listen(1)
+        logging.info("Server running ....")
         print("Server running ....")
 
     
@@ -1002,23 +1010,28 @@ class Server:
                 #   threads are still running
             cThread.start()
             self.connections.append(c)
+            logging.info(str(a[0]) + ": " + str(a[1]) + " connected")
             print(str(a[0]) + ": " + str(a[1]) + " connected")
             
 
 if __name__ == "__main__":
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-
+    logging.info("Trying to connect ...")
     print("Trying to connect ...")
-    try:
-        server = Server()
-        server.run()
-    except KeyboardInterrupt:
-        print("Server shutting down...")
-        stdout.flush()
-        open("user_pass.txt", 'w').close()
-        sys.exit(0);
-    except:
-        print("Couldn't start the server ...")
-        pass
+    while(True):
+        try:
+            server = Server()
+            server.run()
+        except KeyboardInterrupt:
+            logging.info("Server shutting down...")
+            print("Server shutting down...")
+            stdout.flush()
+            open("user_pass.txt", 'w').close()
+            sys.exit(0);
+            break
+        except:
+            logging.info("Couldn't start the server ...")
+            print("Couldn't start the server ...")
+            pass
 
 
