@@ -23,6 +23,7 @@ class Client:
     sendFileFlag = False
     currentMsg = ""
     recvMsg = ""
+    inMenu = False
 
     charStartFileTrans = "!"
     filesVector = []
@@ -119,19 +120,20 @@ class Client:
                     logging.debug("SENDING MSG")
                     #print("DEBUG:SENDING MSG")
                     self.currentMsg = input("")
-
+                    if self.inMenu:
+                        print("IN MENU")
+                        if self.currentMsg == "5":
+                            self.exitProgram()
                     self.sock.send(bytes(self.currentMsg, 'utf-8'))     
+ 
+                    self.inMenu = False
                 elif self.sendFileFlag:
                     logging.debug("SENDING FILE")
                     
                     #print("DEBUG:SENDING FILE")
                     self.sendFileS()
-
             except (KeyboardInterrupt, SystemExit):
-                stdout.flush()
-                logging.info('\nConnection to server closed.')
-                    
-                print ('\nConnection to server closed.')   #Close server
+                self.exitProgram()
                 break
     
     def recvMsg(self):
@@ -158,13 +160,19 @@ class Client:
                     self.sendMessageFlag = False
                     self.sendFileFlag = True
                 else:
+
                     message = data.decode('utf-8')#, 'utf-8')
                     logging.info(message)
                     print(message)
+                    if condData[:5] == "(APP)":
+                        self.inMenu = True
+                        #print("inMENU")
             except (KeyboardInterrupt, SystemExit):
-                stdout.flush()
-                logging.info('\nConnection to server closed.')
-                print ('\nConnection to server closed.')   #Close server
+                print("PIRANHA")
+                #stdout.flush()
+                #logging.info('\nConnection to server closed.')
+                #print ('\nConnection to server closed.')   #Close server
+                self.exitProgram()
                 break
 
     def testFileExists(self, fileName):
@@ -203,10 +211,18 @@ class Client:
             try:   
                 pass
             except (KeyboardInterrupt, SystemExit):
-                stdout.flush()
-                logging.info('Connection to server closed.')
-                print ('\nConnection to server closed.')   #Close server
+                #stdout.flush()
+                #logging.info('Connection to server closed.')
+                #print ('\nConnection to server closed.')   #Close server
+                self.exitProgram()
                 break
+
+    def exitProgram(self):
+        stdout.flush()
+        logging.info('Connection to server closed.')
+        print ('\nConnection to server closed.')   #Close server
+        os._exit(1)
+
 
 
 if __name__ == "__main__":

@@ -52,7 +52,7 @@ class Server:
         self.sendToUser(c, message)
 
     def printMenu(self,c,a):
-            printMenu = """       WELCOME TO CHATROOM APP
+            printMenu = """(APP)       WELCOME TO CHATROOM
                         MENU \n  
                 1 : CREATE ROOM \n
                 2 : DELETE ROOM \n
@@ -114,7 +114,7 @@ class Server:
                 try:
                     self.clearScreen(c,a)
                     self.printMenu(c,a)
-                    self.sendToUser( c,"\tWrite a number from 1 to 6")
+                    self.sendToUser( c,"\tWrite a number from 1 to 5")
                     (close, command) = self.userListener(c, a, iUser, isMenuFirst)
                     
                     command = str(command, "utf-8")
