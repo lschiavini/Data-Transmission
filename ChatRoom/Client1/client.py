@@ -121,8 +121,9 @@ class Client:
                     #print("DEBUG:SENDING MSG")
                     self.currentMsg = input("")
                     if self.inMenu:
-                        print("IN MENU")
+                        logging.debug("IN MENU")
                         if self.currentMsg == "5":
+                            logging.debug("EXIT")
                             self.exitProgram()
                     self.sock.send(bytes(self.currentMsg, 'utf-8'))     
  
@@ -168,7 +169,6 @@ class Client:
                         self.inMenu = True
                         #print("inMENU")
             except (KeyboardInterrupt, SystemExit):
-                print("PIRANHA")
                 #stdout.flush()
                 #logging.info('\nConnection to server closed.')
                 #print ('\nConnection to server closed.')   #Close server

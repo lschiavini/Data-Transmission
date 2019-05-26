@@ -197,3 +197,224 @@ INFO:root:Sending b'!TD_work.pdf'
 
 INFO:root: Server: Sending FileName [TD_work.pdf]
 INFO:root:Done sending
+INFO:root:Trying to connect ...
+INFO:root:Server running ....
+INFO:root:127.0.0.1: 53568 connected
+INFO:root:User List ------- Pass List
+
+INFO:root:127.0.0.1: 53570 connected
+INFO:root:User List ------- Pass List
+
+INFO:root: There are no Users
+INFO:root: There are no Users
+INFO:root: There are Users
+INFO:root:User lucas Logged In
+INFO:root: New User logged in: lucas
+
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root:User skira Logged In
+INFO:root: New User logged in: skira
+
+DEBUG:root:CREATE
+
+INFO:root: There are no rooms
+INFO:root:LIST OF ROOMS
+
+INFO:root:ROOM NAME: lala
+
+INFO:root:	User: lucas
+
+DEBUG:root:ENTER
+
+DEBUG:root:False  lala
+INFO:root:LIST OF ROOMS
+
+INFO:root:ROOM NAME: lala
+
+INFO:root:	User: lucas
+
+INFO:root:	User: skira
+
+DEBUG:root:COND SEND FILES
+
+INFO:root:FileName got: [TD_work.pdf]
+INFO:root:File opened
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+INFO:root:receiving data...
+DEBUG:root:$endFile
+INFO:root:Got File
+INFO:root:Sending b'!TD_work.pdf'
+
+INFO:root: Server: Sending FileName [TD_work.pdf]
+INFO:root:Done sending
+DEBUG:root:COND SEE USERS
+
+DEBUG:root:COND MENU
+
+INFO:root:USER REMOVED FROM ROOM
+DEBUG:root:COND SEE USERS
+
+DEBUG:root:COND MENU
+
+INFO:root:USER REMOVED FROM ROOM
+DEBUG:root:COMMAND: 2
+
+DEBUG:root:DELETE
+
+INFO:root: 
+
+ Room lala Removed 
+DEBUG:root:COMMAND: 1
+
+DEBUG:root:CREATE
+
+INFO:root: There are no rooms
+INFO:root: There are no rooms
+INFO:root:LIST OF ROOMS
+
+INFO:root:ROOM NAME: lala
+
+INFO:root:	User: skira
+
+DEBUG:root:COMMAND: 2
+
+DEBUG:root:DELETE
+
+DEBUG:root:COND MENU
+
+INFO:root:USER REMOVED FROM ROOM
+DEBUG:root:COMMAND: 5
+
+DEBUG:root:EXIT
+
+INFO:root:127.0.0.1: 53570 disconnected
+INFO:root:127.0.0.1: 53570 disconnected
+INFO:root:127.0.0.1: 53568 disconnected
+INFO:root:User Disconnected
+INFO:root:User List ------- Pass List
+
+INFO:root:127.0.0.1: 53630 connected
+INFO:root:lucas	: 1
+
+INFO:root:skira	: 1
+
+INFO:root:127.0.0.1: 53632 connected
+INFO:root:User List ------- Pass List
+
+INFO:root:lucas	: 1
+
+INFO:root:skira	: 1
+
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root:User lala Logged In
+INFO:root: New User logged in: lala
+
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root:User 1 Logged In
+INFO:root: New User logged in: 1
+
+DEBUG:root:EXIT
+
+INFO:root:127.0.0.1: 53630 disconnected
+INFO:root:127.0.0.1: 53630 disconnected
+INFO:root:User Disconnected
+INFO:root:Server shutting down...
+INFO:root:Trying to connect ...
+INFO:root:Server running ....
+INFO:root:127.0.0.1: 53650 connected
+INFO:root:User List ------- Pass List
+
+INFO:root:127.0.0.1: 53650 disconnected
+INFO:root:127.0.0.1: 53652 connected
+INFO:root:User List ------- Pass List
+
+INFO:root: There are no Users
+INFO:root: There are no Users
+INFO:root: There are Users
+INFO:root:User lala Logged In
+INFO:root: New User logged in: lala
+
+INFO:root:127.0.0.1: 53652 disconnected
+INFO:root:User Disconnected
+INFO:root:127.0.0.1: 53656 connected
+INFO:root:User List ------- Pass List
+
+INFO:root:lala	: 1
+
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root:User skira Logged In
+INFO:root: New User logged in: skira
+
+INFO:root:127.0.0.1: 53658 connected
+INFO:root:User List ------- Pass List
+
+INFO:root:lala	: 1
+
+INFO:root:skira	: 1
+
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root:User lala Logged In
+INFO:root: New User logged in: lala
+
+INFO:root:127.0.0.1: 53658 disconnected
+INFO:root:User Disconnected
+INFO:root:User Disconnected
+INFO:root:Server shutting down...
+INFO:root:Trying to connect ...
+INFO:root:Server running ....
+INFO:root:User List ------- Pass List
+
+INFO:root:127.0.0.1: 53662 connected
+INFO:root: There are no Users
+INFO:root: There are no Users
+INFO:root: There are Users
+INFO:root:User lucas Logged In
+INFO:root: New User logged in: lucas
+
+INFO:root:127.0.0.1: 53666 connected
+INFO:root:User List ------- Pass List
+
+INFO:root:lucas	: 1
+
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root: There are Users
+INFO:root:User skira Logged In
+INFO:root: New User logged in: skira
+
+INFO:root:127.0.0.1: 53662 disconnected
+INFO:root:User Disconnected
+INFO:root:User Disconnected
