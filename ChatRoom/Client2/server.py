@@ -612,6 +612,11 @@ class Server:
 
     def exitRoom(self, c, a, iUser):
         room = self.findRoomFromUser(iUser)
+        msg = "\nYou left the room " + room.getName()
+        self.sendToUser(iUser.getConnection(), msg)
+        msg2 = "\nUser " + iUser.getName() + " has left the room"
+        self.sendToRoom( msg2,room,iUser)
+        Event().wait(1.5)
         room.removeUser(iUser)
         logging.info("USER REMOVED FROM ROOM")
         print("USER REMOVED FROM ROOM")
@@ -655,10 +660,10 @@ class Server:
                                         break
                                     elif condNo:
                                         return False
-            else:
-                self.sendToUser(c," \n\n Room is not empty for deletion ")  
-                Event().wait(1.0) 
-                return False 
+                else:
+                    self.sendToUser(c," \n\n Room is not empty for deletion ")  
+                    Event().wait(1.0) 
+                    return False 
         else:
             self.sendToUser(c," \n\n Room doesn't exist ") 
             Event().wait(1.0)  
@@ -727,17 +732,17 @@ class Server:
         if room is not None:
             users = room.getUsers()  
             for u in users:
-                #if str(u.getName()) != str(iUser.getName()):
-                connection = u.getConnection()
-                if connection is not None:
-                    try:
-                        #if msg is not None:
-                        connection.send(bytes(msg, 'utf-8'))
-                    except(ConnectionResetError):
-                        #   Checks if connection was closed by peer
-                        pass
-                    except(Exception):
-                        pass
+                if str(u.getName()) != str(iUser.getName()):
+                    connection = u.getConnection()
+                    if connection is not None:
+                        try:
+                            #if msg is not None:
+                            connection.send(bytes(msg, 'utf-8'))
+                        except(ConnectionResetError):
+                            #   Checks if connection was closed by peer
+                            pass
+                        except(Exception):
+                            pass
         else:
             pass
 
